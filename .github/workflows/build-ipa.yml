@@ -1,0 +1,55 @@
+name: Build GlassNotes LiveContainer IPA
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build unsigned .ipa for LiveContainer
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+
+      - name: Show Xcode Version
+        run: xcodebuild -version
+
+      - name: Build App Payload
+        run: |
+          mkdir -p build/derivedData
+          xcodebuild build \
+            -project GlassNotes.xcodeproj \
+            -scheme GlassNotes \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build/derivedData \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Create LiveContainer .ipa Package
+        run: |
+          mkdir -p Payload
+          APP_PATH=$(find build/derivedData/Build/Products/Release-iphoneos -name "*.app" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Error: Could not find built .app bundle!"
+            exit 1
+          fi
+          echo "Found app bundle at $APP_PATH"
+          cp -R "$APP_PATH" Payload/
+          zip -r GlassNotes.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GlassNotes-LiveContainer-IPA
+          path: GlassNotes.ipa
+          retention-days: 30

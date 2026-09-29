@@ -1,0 +1,386 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000012C10000000000001 /* GlassNotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000012C10000000000001 /* GlassNotesApp.swift */; };
+		A10000022C10000000000002 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000022C10000000000002 /* Note.swift */; };
+		A10000032C10000000000003 /* CategoryTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000032C10000000000003 /* CategoryTag.swift */; };
+		A10000042C10000000000004 /* SyncConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000042C10000000000004 /* SyncConfig.swift */; };
+		A10000052C10000000000005 /* BiometricAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000052C10000000000005 /* BiometricAuthService.swift */; };
+		A10000062C10000000000006 /* TelegramSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000062C10000000000006 /* TelegramSyncService.swift */; };
+		A10000072C10000000000007 /* GlassBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000072C10000000000007 /* GlassBackground.swift */; };
+		A10000082C10000000000008 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000082C10000000000008 /* GlassCard.swift */; };
+		A10000092C10000000000009 /* GlassSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000092C10000000000009 /* GlassSearchBar.swift */; };
+		A100000A2C1000000000000A /* GlassButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000A2C1000000000000A /* GlassButton.swift */; };
+		A100000B2C1000000000000B /* QuickStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000B2C1000000000000B /* QuickStreamView.swift */; };
+		A100000C2C1000000000000C /* NoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000C2C1000000000000C /* NoteCardView.swift */; };
+		A100000D2C1000000000000D /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000D2C1000000000000D /* NoteEditorView.swift */; };
+		A100000E2C1000000000000E /* FormattingBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000E2C1000000000000E /* FormattingBar.swift */; };
+		A100000F2C1000000000000F /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000F2C1000000000000F /* LockView.swift */; };
+		A10000102C10000000000010 /* SyncSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000102C10000000000010 /* SyncSettingsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C10000002C10000000000000 /* GlassNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlassNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000012C10000000000001 /* GlassNotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassNotesApp.swift; sourceTree = "<group>"; };
+		B10000022C10000000000002 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		B10000032C10000000000003 /* CategoryTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTag.swift; sourceTree = "<group>"; };
+		B10000042C10000000000004 /* SyncConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncConfig.swift; sourceTree = "<group>"; };
+		B10000052C10000000000005 /* BiometricAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthService.swift; sourceTree = "<group>"; };
+		B10000062C10000000000006 /* TelegramSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelegramSyncService.swift; sourceTree = "<group>"; };
+		B10000072C10000000000007 /* GlassBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassBackground.swift; sourceTree = "<group>"; };
+		B10000082C10000000000008 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		B10000092C10000000000009 /* GlassSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassSearchBar.swift; sourceTree = "<group>"; };
+		B100000A2C1000000000000A /* GlassButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassButton.swift; sourceTree = "<group>"; };
+		B100000B2C1000000000000B /* QuickStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickStreamView.swift; sourceTree = "<group>"; };
+		B100000C2C1000000000000C /* NoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardView.swift; sourceTree = "<group>"; };
+		B100000D2C1000000000000D /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
+		B100000E2C1000000000000E /* FormattingBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingBar.swift; sourceTree = "<group>"; };
+		B100000F2C1000000000000F /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
+		B10000102C10000000000010 /* SyncSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsView.swift; sourceTree = "<group>"; };
+		B10000112C10000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000122C10000000000012 /* GlassNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GlassNotes.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		D10000002C10000000000000 = {
+			isa = PBXGroup;
+			children = (
+				D10000012C10000000000001 /* GlassNotes */,
+				D10000022C10000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D10000012C10000000000001 /* GlassNotes */ = {
+			isa = PBXGroup;
+			children = (
+				D10000032C10000000000003 /* App */,
+				D10000042C10000000000004 /* Models */,
+				D10000052C10000000000005 /* Services */,
+				D10000062C10000000000006 /* Views */,
+			);
+			path = GlassNotes;
+			sourceTree = "<group>";
+		};
+		D10000022C10000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10000002C10000000000000 /* GlassNotes.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D10000032C10000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B10000012C10000000000001 /* GlassNotesApp.swift */,
+				B10000112C10000000000011 /* Info.plist */,
+				B10000122C10000000000012 /* GlassNotes.entitlements */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D10000042C10000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000022C10000000000002 /* Note.swift */,
+				B10000032C10000000000003 /* CategoryTag.swift */,
+				B10000042C10000000000004 /* SyncConfig.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D10000052C10000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10000052C10000000000005 /* BiometricAuthService.swift */,
+				B10000062C10000000000006 /* TelegramSyncService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D10000062C10000000000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D10000072C10000000000007 /* Components */,
+				D10000082C10000000000008 /* Feed */,
+				D10000092C10000000000009 /* Editor */,
+				D100000A2C1000000000000A /* Security */,
+				D100000B2C1000000000000B /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D10000072C10000000000007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B10000072C10000000000007 /* GlassBackground.swift */,
+				B10000082C10000000000008 /* GlassCard.swift */,
+				B10000092C10000000000009 /* GlassSearchBar.swift */,
+				B100000A2C1000000000000A /* GlassButton.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		D10000082C10000000000008 /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				B100000B2C1000000000000B /* QuickStreamView.swift */,
+				B100000C2C1000000000000C /* NoteCardView.swift */,
+			);
+			path = Feed;
+			sourceTree = "<group>";
+		};
+		D10000092C10000000000009 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				B100000D2C1000000000000D /* NoteEditorView.swift */,
+				B100000E2C1000000000000E /* FormattingBar.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		D100000A2C1000000000000A /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				B100000F2C1000000000000F /* LockView.swift */,
+			);
+			path = Security;
+			sourceTree = "<group>";
+		};
+		D100000B2C1000000000000B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B10000102C10000000000010 /* SyncSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000002C10000000000000 /* GlassNotes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F10000032C10000000000003 /* Build configuration list for PBXNativeTarget "GlassNotes" */;
+			buildPhases = (
+				E10000012C10000000000001 /* Sources */,
+				E10000022C10000000000002 /* Frameworks */,
+				E10000032C10000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GlassNotes;
+			productName = GlassNotes;
+			productReference = C10000002C10000000000000 /* GlassNotes.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000002C10000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					E10000002C10000000000000 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = F10000012C10000000000001 /* Build configuration list for PBXProject "GlassNotes" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10000002C10000000000000;
+			productRefGroup = D10000022C10000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E10000002C10000000000000 /* GlassNotes */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E10000012C10000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000012C10000000000001 /* GlassNotesApp.swift in Sources */,
+				A10000022C10000000000002 /* Note.swift in Sources */,
+				A10000032C10000000000003 /* CategoryTag.swift in Sources */,
+				A10000042C10000000000004 /* SyncConfig.swift in Sources */,
+				A10000052C10000000000005 /* BiometricAuthService.swift in Sources */,
+				A10000062C10000000000006 /* TelegramSyncService.swift in Sources */,
+				A10000072C10000000000007 /* GlassBackground.swift in Sources */,
+				A10000082C10000000000008 /* GlassCard.swift in Sources */,
+				A10000092C10000000000009 /* GlassSearchBar.swift in Sources */,
+				A100000A2C1000000000000A /* GlassButton.swift in Sources */,
+				A100000B2C1000000000000B /* QuickStreamView.swift in Sources */,
+				A100000C2C1000000000000C /* NoteCardView.swift in Sources */,
+				A100000D2C1000000000000D /* NoteEditorView.swift in Sources */,
+				A100000E2C1000000000000E /* FormattingBar.swift in Sources */,
+				A100000F2C1000000000000F /* LockView.swift in Sources */,
+				A10000102C10000000000010 /* SyncSettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10000022C10000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E10000032C10000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F10000022C10000000000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GlassNotes/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.glassnotes.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_TARGETS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F10000042C10000000000004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F10000052C10000000000005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GlassNotes/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.glassnotes.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_TARGETS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F10000062C10000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F10000012C10000000000001 /* Build configuration list for PBXProject "GlassNotes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000042C10000000000004 /* Debug */,
+				F10000062C10000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F10000032C10000000000003 /* Build configuration list for PBXNativeTarget "GlassNotes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000022C10000000000002 /* Debug */,
+				F10000052C10000000000005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F10000002C10000000000000 /* Project object */;
+}
