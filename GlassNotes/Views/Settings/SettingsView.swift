@@ -193,26 +193,38 @@ struct SettingsView: View {
     }
 
     private var exportPayload: String {
+        let payload = notes
+            .sorted { $0.updatedAt > $1.updatedAt }
+            .map(NoteRecord.init)
+
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         encoder.dateEncodingStrategy = .iso8601
 
-        let payload = notes
-            .sorted { $0.updatedAt > $1.updatedAt }
-            .map { note in
-                [
-                    "id": note.id.uuidString,
-                    "title": note.title,
-                    "content": note.content,
-                    "tag": note.tag?.name ?? "",
-                    "pinned": note.isPinned,
-                    "locked": note.isLocked,
-                    "createdAt": note.createdAt,
-                    "updatedAt": note.updatedAt
-                ] as [String: Any]
-            }
-
         guard let data = try? encoder.encode(payload) else { return "[]" }
+
+struct NoteRecord: Encodable {
+    let id: String
+    let title: String
+    let content: String
+    let tag: String
+    let pinned: Bool
+    let locked: Bool
+    let createdAt: Date
+    let updatedAt: Date
+
+    init(note: Note) {
+        id = note.id.uuidString
+        title = note.title
+        content = note.content
+        tag = note.tag?.name ?? ""
+        pinned = note.isPinned
+        locked = note.isLocked
+        createdAt = note.createdAt
+        updatedAt = note.updatedAt
+    }
+}
+
         return String(decoding: data, as: UTF8.self)
     }
 

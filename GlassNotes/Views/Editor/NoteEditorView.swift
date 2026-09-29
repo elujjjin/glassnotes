@@ -157,9 +157,6 @@ struct NoteEditorView: View {
         }
     }
 
-    }
-
-
     @ViewBuilder
     private var editor: some View {
         if isPreviewing {
@@ -195,6 +192,7 @@ struct NoteEditorView: View {
                 .padding(.horizontal, 24)
             }
         }
+    }
 
     private var wordCount: Int {
         content.split(whereSeparator: { $0.isWhitespace }).count

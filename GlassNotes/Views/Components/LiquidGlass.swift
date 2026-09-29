@@ -15,6 +15,7 @@ extension GlassConfig {
 extension View {
     @ViewBuilder
     func liquidGlass(_ config: GlassConfig) -> some View {
+        #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             let base = config.tint.map { Glass.regular.tint($0) } ?? .regular
             let shape = RoundedRectangle(cornerRadius: config.cornerRadius)
@@ -26,6 +27,9 @@ extension View {
         } else {
             refractiveSurface(cornerRadius: config.cornerRadius, tint: config.tint)
         }
+        #else
+        refractiveSurface(cornerRadius: config.cornerRadius, tint: config.tint)
+        #endif
     }
 
     private func refractiveSurface(cornerRadius: CGFloat, tint: Color?) -> some View {
@@ -82,10 +86,14 @@ extension View {
 extension View {
     @ViewBuilder
     func glassGroup<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             GlassEffectContainer(spacing: 14, content: content)
         } else {
             content()
         }
+        #else
+        content()
+        #endif
     }
 }
