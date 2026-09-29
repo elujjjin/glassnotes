@@ -359,8 +359,10 @@ struct MarkdownText: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
-                view(for: block)
+            // Index into `blocks` rather than using `\.offset` on an enumerated
+            // tuple: key paths to tuple elements are not valid Swift.
+            ForEach(blocks.indices, id: \.self) { index in
+                view(for: blocks[index])
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -426,10 +428,14 @@ struct MarkdownText: View {
 
     // MARK: Pieces
 
-    private func row<Leading: View>(
+    /// Lays out a list row: an optional leading marker beside the content.
+    ///
+    /// Both slots are passed as closures to a single argument so the call
+    /// sites stay unambiguous under result-builder inference.
+    private func row<Leading: View, Content: View>(
         indent: Int,
         @ViewBuilder leading: () -> Leading,
-        @ViewBuilder content: () -> some View
+        @ViewBuilder content: () -> Content
     ) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             leading()

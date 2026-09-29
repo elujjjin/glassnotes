@@ -75,8 +75,12 @@ struct SettingsView: View {
             }
 
             HStack(spacing: 10) {
+                // Read the flag here rather than inside the label closure, which
+                // is @Sendable and cannot touch main-actor state.
+                let photoButtonTitle = appearance.usesPhoto ? "Change photo" : "Choose photo"
+
                 PhotosPicker(selection: $photoSelection, matching: .images, photoLibrary: .shared()) {
-                    Label(appearance.usesPhoto ? "Change photo" : "Choose photo", systemImage: "photo")
+                    Label(photoButtonTitle, systemImage: "photo")
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -192,9 +196,11 @@ struct SettingsView: View {
             Button("Cancel", role: .cancel) { tagPendingDeletion = nil }
         } message: { tag in
             let count = notes.filter { $0.tag?.id == tag.id }.count
-            return count == 0
-                ? "This tag is not in use."
-                : "\(count) note\(count == 1 ? "" : "s") will lose this tag. The notes themselves are kept."
+            // `message:` is a ViewBuilder, so this must be a View, not a String.
+            Text(count == 0
+                 ? "This tag is not in use."
+                 : "\(count) note\(count == 1 ? "" : "s") will lose this tag. The notes themselves are kept.")
+                .font(.system(size: 13))
         }
     }
 
