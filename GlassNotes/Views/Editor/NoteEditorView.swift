@@ -208,10 +208,10 @@ public struct NoteEditorView: View {
         isSyncing = true
         syncStatus = "Sending to Telegram..."
         
-        Task {
+        Task { @MainActor in
             let service = TelegramSyncService()
             let titleToUse = noteTitle.isEmpty ? "Quick Note" : noteTitle
-            let success = await service.sendNoteToTelegram(
+            _ = await service.sendNoteToTelegram(
                 botToken: config.telegramBotToken,
                 chatId: config.telegramChatId,
                 noteTitle: titleToUse,

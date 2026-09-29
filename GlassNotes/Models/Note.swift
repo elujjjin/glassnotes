@@ -70,7 +70,7 @@ public final class Note {
         let formatter = DateFormatter()
         if Calendar.current.isDateInToday(updatedAt) {
             formatter.dateFormat = "h:mm a"
-        } else if Calendar.current.isDateInYear(updatedAt) {
+        } else if Calendar.current.isDate(updatedAt, equalTo: Date(), toGranularity: .year) {
             formatter.dateFormat = "MMM d"
         } else {
             formatter.dateFormat = "MM/dd/yy"

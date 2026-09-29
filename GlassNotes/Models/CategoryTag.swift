@@ -9,7 +9,7 @@ public final class CategoryTag {
     public var colorHex: String
     public var iconName: String
     
-    @Relationship(backlink: \Note.tag)
+    @Relationship(deleteRule: .nullify)
     public var notes: [Note]?
     
     public init(

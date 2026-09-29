@@ -3,7 +3,7 @@ import SwiftData
 
 public struct QuickStreamView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Note.isPinned, order: .reverse), SortDescriptor(\Note.updatedAt, order: .reverse)]) private var notes: [Note]
+    @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
     @Query private var tags: [CategoryTag]
     
     @State private var searchText: String = ""
@@ -23,6 +23,7 @@ public struct QuickStreamView: View {
             let matchesTag = selectedTag == nil || note.tag?.id == selectedTag?.id
             return matchesSearch && matchesTag && !note.isArchived
         }
+        .sorted { ($0.isPinned ? 1 : 0) > ($1.isPinned ? 1 : 0) }
     }
     
     public var body: some View {

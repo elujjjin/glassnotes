@@ -102,7 +102,7 @@ public struct SyncSettingsView: View {
                                 Toggle("Require Face ID / Touch ID", isOn: $enableBiometrics)
                                     .tint(.cyan)
                                     .foregroundColor(.white)
-                                    .onChange(of: enableBiometrics) { newValue in
+                                    .onChange(of: enableBiometrics) { _, newValue in
                                         saveSecurityConfig(newValue)
                                     }
                             }
