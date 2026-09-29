@@ -1,68 +1,38 @@
-# 💎 GlassNotes iOS - Liquid Glass Private Notepad
+# GlassNotes iOS
 
-**GlassNotes** is a native iOS application built with **Swift & SwiftUI**, leveraging modern **Liquid Glass visual effects** (ultraThinMaterial blurs, animated mesh gradients, frosted cards, and vibrant translucency), **SwiftData** persistence, local **Face ID / Touch ID security**, and a **Telegram-style instant scratchpad timeline**.
+A private notepad for iPhone built with Swift and SwiftUI. Notes are stored locally with SwiftData, optionally locked behind Face ID, and can be forwarded to Telegram. The interface uses Apple's Liquid Glass material.
 
-Designed specifically to be built easily without a Mac via **GitHub Actions CI/CD** and loaded directly into **LiveContainer** on iOS devices (iPhone 11 / iOS 18/26+).
+## Backgrounds
 
----
+The wallpaper is chosen in Settings and matters more than usual here: Liquid Glass refracts whatever sits behind it, so a flat colour gives it nothing to bend. The built-in options are Graphite, Aurora, Prism, Lattice, and Silk, plus any photo from your library.
 
-## 🌟 Key Features
+- Graphite, Silk — restrained, keeps text legible
+- Lattice — a fine grid, which makes lensing and distortion obvious
+- Prism — saturated, for checking chromatic fringing at the edges
+- Photo — shows refraction most clearly
 
-- 💎 **Liquid Glass UI**: Modern frosted glass materials (`.ultraThinMaterial`), dynamic ambient mesh gradient backgrounds, translucent floating search bar, and interactive haptic buttons.
-- ⚡ **Telegram-Style Quick Scratchpad Feed**: Instant bottom input bar to stream thoughts, quick notes, or snippets instantly into your feed (just like sending messages to yourself in Telegram).
-- 🔒 **Privacy & Biometric Lock**: Secure private notes with Face ID, Touch ID, or passcode authentication.
-- 🏷️ **Tag Badges & Filters**: Organize notes with custom icons and hex color badges (Ideas, Work, Personal, Secret, Scratchpad).
-- 📝 **Markdown Editor & Live Preview**: Write rich text with a quick Markdown formatting toolbar (`#`, `**bold**`, `*italic*`, `- [ ] tasks`, ``code``) and toggle instant live preview mode.
-- ✈️ **Telegram Cross-Platform Sync**: Optional integration with Telegram Bot API to send notes back and forth between your iPhone and Telegram on PC or other devices.
-- 📦 **No-Mac Sideloading**: GitHub Actions workflow compiles the unsigned `.ipa` automatically for LiveContainer.
+## Material
 
----
+On iOS 26 and later, cards, fields, and buttons use the real `Glass` material via `glassEffect(_:in:)` and are grouped in a `GlassEffectContainer`. On iOS 17 through 25 the app falls back to a hand-built approximation: a thin tint, a strong specular rim, and an inner angular sheen. It is deliberately not a frosted material — the fallback keeps the background legible rather than blurring it.
 
-## 🚀 How to Build & Install on LiveContainer (No Mac Needed!)
+Both paths go through `liquidGlass(_:)` in `Views/Components/LiquidGlass.swift`, so there is one place to change the look.
 
-Since you are running Windows, follow these 3 simple steps to get your `.ipa` artifact built in under 2 minutes using GitHub Actions:
+## Features
 
-### Step 1: Push Code to GitHub
+- Quick capture bar that streams notes into the feed
+- Search across titles and bodies
+- Tags with colours and SF Symbols, filterable
+- Markdown toolbar and preview
+- Per-note pin and lock
+- Face ID / Touch ID / passcode lock
+- Telegram forwarding
+- JSON export via the share sheet
 
-Open terminal / PowerShell in `c:\vvv\iosthing` and push the project to your GitHub repository:
+## Build
 
-```bash
-git init
-git add .
-git commit -m "Initial commit of GlassNotes iOS app"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/GlassNotes.git
-git push -u origin main
-```
+Push to GitHub; the workflow in `.github/workflows/build-ipa.yml` compiles an unsigned `.ipa` and uploads it as a build artifact. Open the run, download `GlassNotes-LiveContainer-IPA`, unzip, and side-load the `.ipa` into LiveContainer.
 
----
+## Stack
 
-### Step 2: Automated GitHub Actions Build
+Swift · SwiftUI · SwiftData · LocalAuthentication · GitHub Actions
 
-1. Go to your repository on **GitHub.com**.
-2. Click on the **Actions** tab.
-3. You will see the **Build GlassNotes LiveContainer IPA** workflow running automatically (or click **Run workflow** manually).
-4. Wait ~1–2 minutes for the `macos-14` runner to complete compiling Xcode.
-5. Click on the completed workflow run.
-6. Scroll down to the **Artifacts** section at the bottom of the page and click to download **`GlassNotes-LiveContainer-IPA.zip`**.
-
----
-
-### Step 3: Install in LiveContainer on iPhone 11
-
-1. Unzip the downloaded file to get **`GlassNotes.ipa`**.
-2. Share `GlassNotes.ipa` to your iPhone (via AirDrop, Telegram, Google Drive, iCloud, or local transfer).
-3. Open **LiveContainer** on your iPhone.
-4. Tap **+ (Add App)** and select `GlassNotes.ipa`.
-5. Tap **GlassNotes** to launch! Enjoy your private Liquid Glass Notepad! 🎉
-
----
-
-## 🛠️ Tech Stack & Architecture
-
-- **Language**: Swift 5
-- **UI Framework**: SwiftUI (iOS 17+)
-- **Storage**: SwiftData (`@Model`)
-- **Authentication**: LocalAuthentication (`LAContext` Face ID / Touch ID)
-- **CI/CD**: GitHub Actions (`macos-14` / `xcodebuild`)
-- **Package Target**: Unsigned `.ipa` / LiveContainer Payload

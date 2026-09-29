@@ -1,61 +1,53 @@
 import SwiftUI
 
-public struct FormattingBar: View {
-    @Binding public var text: String
-    
-    public init(text: Binding<String>) {
-        self._text = text
-    }
-    
-    public var body: some View {
+struct FormattingBar: View {
+    @Binding var text: String
+
+    private let tools: [(icon: String, label: String, snippet: String, isBlock: Bool)] = [
+        ("number", "Heading", "# ", false),
+        ("bold", "Bold", "****", false),
+        ("italic", "Italic", "**", false),
+        ("list.bullet", "List", "- ", true),
+        ("checkmark.square", "Task", "- [ ] ", true),
+        ("chevron.left.forwardslash.chevron.right", "Code", "``", false),
+        ("quote.opening", "Quote", "> ", true),
+        ("link", "Link", "[text](url)", false)
+    ]
+
+    var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                FormatButton(icon: "number", label: "Heading") { insert("# ") }
-                FormatButton(icon: "bold", label: "Bold") { insertAround("**") }
-                FormatButton(icon: "italic", label: "Italic") { insertAround("*") }
-                FormatButton(icon: "list.bullet", label: "List") { insert("\n- ") }
-                FormatButton(icon: "checkmark.square", label: "Task") { insert("\n- [ ] ") }
-                FormatButton(icon: "chevron.left.forwardslash.chevron.right", label: "Code") { insertAround("`") }
-                FormatButton(icon: "quote.opening", label: "Quote") { insert("\n> ") }
-                FormatButton(icon: "link", label: "Link") { insert("[Title](url)") }
+            HStack(spacing: 6) {
+                ForEach(tools, id: \.label) { tool in
+                    Button {
+                        insert(tool.snippet, isBlock: tool.isBlock)
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: tool.icon)
+                                .font(.system(size: 12, weight: .semibold))
+                            Text(tool.label)
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 6)
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.white.opacity(0.07))
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 12)
             .padding(.vertical, 8)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(.ultraThinMaterial)
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.2), lineWidth: 1))
-        )
+        .liquidGlass(GlassConfig(cornerRadius: 14))
     }
-    
-    private func insert(_ string: String) {
-        text.append(string)
-    }
-    
-    private func insertAround(_ token: String) {
-        text.append("\(token)text\(token)")
-    }
-}
 
-struct FormatButton: View {
-    let icon: String
-    let label: String
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 13, weight: .bold))
-                Text(label)
-                    .font(.system(size: 12, weight: .medium))
-            }
-            .foregroundColor(.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color.white.opacity(0.12))
-            .cornerRadius(8)
+    private func insert(_ snippet: String, isBlock: Bool) {
+        if isBlock, !text.isEmpty, !text.hasSuffix("\n") {
+            text.append("\n")
         }
+        text.append(snippet)
     }
 }

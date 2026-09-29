@@ -53,19 +53,18 @@ public final class Note {
     }
     
     public var snippet: String {
-        let lines = content.components(separatedBy: .newlines)
-        let bodyLines = lines.dropFirst().joined(separator: " ").trimmingCharacters(in: .whitespaces)
-        if bodyLines.isEmpty {
-            return content
-        }
-        return bodyLines
+        let body = content
+            .components(separatedBy: .newlines)
+            .dropFirst()
+            .joined(separator: " ")
+            .trimmingCharacters(in: .whitespaces)
+        return body.isEmpty ? content : body
     }
-    
+
     public var wordCount: Int {
-        let words = content.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-        return words.count
+        content.split(whereSeparator: { $0.isWhitespace }).count
     }
-    
+
     public var formattedDate: String {
         let formatter = DateFormatter()
         if Calendar.current.isDateInToday(updatedAt) {

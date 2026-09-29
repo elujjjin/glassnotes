@@ -6,9 +6,7 @@ import Combine
 public final class BiometricAuthService: ObservableObject {
     @Published public var isUnlocked: Bool = false
     @Published public var authError: String? = nil
-    
-    public init() {}
-    
+
     public var biometryType: LABiometryType {
         let context = LAContext()
         var error: NSError?

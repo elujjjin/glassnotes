@@ -1,40 +1,38 @@
 import SwiftUI
 
-public struct GlassSearchBar: View {
-    @Binding public var text: String
-    public var placeholder: String = "Search notes..."
-    
-    public init(text: Binding<String>, placeholder: String = "Search notes...") {
+struct GlassSearchBar: View {
+    @Binding var text: String
+    var placeholder = "Search notes..."
+
+    init(text: Binding<String>, placeholder: String = "Search notes...") {
         self._text = text
         self.placeholder = placeholder
     }
-    
-    public var body: some View {
-        HStack(spacing: 12) {
+
+    var body: some View {
+        HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.white.opacity(0.7))
-                .font(.system(size: 17, weight: .medium))
-            
-            TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.white.opacity(0.45)))
-                .foregroundColor(.white)
-                .accentColor(.cyan)
-            
-            if !$text.wrappedValue.isEmpty {
-                Button(action: { text = "" }) {
+                .foregroundStyle(.secondary)
+                .font(.system(size: 15, weight: .medium))
+
+            TextField(placeholder, text: $text)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundStyle(.secondary)
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.thinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
-                )
-        )
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .liquidGlass(GlassConfig.field)
     }
 }
+

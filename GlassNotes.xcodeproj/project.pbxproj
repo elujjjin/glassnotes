@@ -22,7 +22,9 @@
 		A100000D2C1000000000000D /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000D2C1000000000000D /* NoteEditorView.swift */; };
 		A100000E2C1000000000000E /* FormattingBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000E2C1000000000000E /* FormattingBar.swift */; };
 		A100000F2C1000000000000F /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100000F2C1000000000000F /* LockView.swift */; };
-		A10000102C10000000000010 /* SyncSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000102C10000000000010 /* SyncSettingsView.swift */; };
+				A10000102C10000000000010 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000152C10000000000015 /* SettingsView.swift */; };
+		A10000112C10000000000013 /* LiquidGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000132C10000000000013 /* LiquidGlass.swift */; };
+		A10000122C10000000000014 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000142C10000000000014 /* AppearanceStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,8 +44,10 @@
 		B100000D2C1000000000000D /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		B100000E2C1000000000000E /* FormattingBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingBar.swift; sourceTree = "<group>"; };
 		B100000F2C1000000000000F /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
-		B10000102C10000000000010 /* SyncSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsView.swift; sourceTree = "<group>"; };
 		B10000112C10000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000132C10000000000013 /* LiquidGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlass.swift; sourceTree = "<group>"; };
+		B10000142C10000000000014 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
+		B10000152C10000000000015 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10000122C10000000000012 /* GlassNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GlassNotes.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,6 +102,7 @@
 		D10000052C10000000000005 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B10000142C10000000000014 /* AppearanceStore.swift */,
 				B10000052C10000000000005 /* BiometricAuthService.swift */,
 				B10000062C10000000000006 /* TelegramSyncService.swift */,
 			);
@@ -119,6 +124,7 @@
 		D10000072C10000000000007 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				B10000132C10000000000013 /* LiquidGlass.swift */,
 				B10000072C10000000000007 /* GlassBackground.swift */,
 				B10000082C10000000000008 /* GlassCard.swift */,
 				B10000092C10000000000009 /* GlassSearchBar.swift */,
@@ -156,7 +162,7 @@
 		D100000B2C1000000000000B /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				B10000102C10000000000010 /* SyncSettingsView.swift */,
+				B10000152C10000000000015 /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -234,7 +240,9 @@
 				A100000D2C1000000000000D /* NoteEditorView.swift in Sources */,
 				A100000E2C1000000000000E /* FormattingBar.swift in Sources */,
 				A100000F2C1000000000000F /* LockView.swift in Sources */,
-				A10000102C10000000000010 /* SyncSettingsView.swift in Sources */,
+				A10000112C10000000000013 /* LiquidGlass.swift in Sources */,
+				A10000122C10000000000014 /* AppearanceStore.swift in Sources */,
+				A10000102C10000000000010 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

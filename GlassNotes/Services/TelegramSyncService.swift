@@ -4,9 +4,7 @@ import Foundation
 public final class TelegramSyncService: ObservableObject {
     @Published public var isSyncing: Bool = false
     @Published public var statusMessage: String? = nil
-    
-    public init() {}
-    
+
     public func sendNoteToTelegram(botToken: String, chatId: String, noteTitle: String, noteContent: String) async -> Bool {
         guard !botToken.isEmpty, !chatId.isEmpty else {
             self.statusMessage = "Telegram Bot Token and Chat ID required."
