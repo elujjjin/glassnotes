@@ -202,29 +202,6 @@ struct SettingsView: View {
         encoder.dateEncodingStrategy = .iso8601
 
         guard let data = try? encoder.encode(payload) else { return "[]" }
-
-struct NoteRecord: Encodable {
-    let id: String
-    let title: String
-    let content: String
-    let tag: String
-    let pinned: Bool
-    let locked: Bool
-    let createdAt: Date
-    let updatedAt: Date
-
-    init(note: Note) {
-        id = note.id.uuidString
-        title = note.title
-        content = note.content
-        tag = note.tag?.name ?? ""
-        pinned = note.isPinned
-        locked = note.isLocked
-        createdAt = note.createdAt
-        updatedAt = note.updatedAt
-    }
-}
-
         return String(decoding: data, as: UTF8.self)
     }
 
@@ -271,6 +248,29 @@ struct NoteRecord: Encodable {
         appearance.photo = UIImage(data: data)
     }
 }
+
+struct NoteRecord: Encodable {
+    let id: String
+    let title: String
+    let content: String
+    let tag: String
+    let pinned: Bool
+    let locked: Bool
+    let createdAt: Date
+    let updatedAt: Date
+
+    init(note: Note) {
+        id = note.id.uuidString
+        title = note.title
+        content = note.content
+        tag = note.tag?.name ?? ""
+        pinned = note.isPinned
+        locked = note.isLocked
+        createdAt = note.createdAt
+        updatedAt = note.updatedAt
+    }
+}
+
 
 struct SettingsGroup<Content: View>: View {
     let title: String
