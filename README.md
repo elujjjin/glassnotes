@@ -22,11 +22,29 @@ Both paths go through `liquidGlass(_:)` in `Views/Components/LiquidGlass.swift`,
 - Quick capture bar that streams notes into the feed
 - Search across titles and bodies
 - Tags with colours and SF Symbols, filterable
-- Markdown toolbar and preview
+- Markdown toolbar that acts on the current selection
+- Markdown preview, rendered in-app with no third-party dependency
 - Per-note pin and lock
 - Face ID / Touch ID / passcode lock
 - Telegram forwarding
 - JSON export via the share sheet
+
+## Markdown
+
+`Views/Components/MarkdownText.swift` holds a small block and inline parser:
+headings, paragraphs, bulleted / ordered / task lists, block quotes, thematic
+breaks, fenced code, and `**bold**`, `*italic*`, `` `code` ``, `~~struck~~`,
+`[links](url)`. Unrecognised input falls through to plain text.
+
+The editor is a `UITextView` wrapper rather than SwiftUI's `TextEditor`, because
+`TextEditor` does not expose its selection and a formatting toolbar needs one.
+That selection is passed down as a binding to `FormattingBar`.
+
+## Privacy notes
+
+- A locked note is never matched by search on its body, only on its title.
+- JSON export redacts locked note bodies by default. "Include locked notes" under
+  Settings > Data turns this off.
 
 ## Build
 

@@ -17,9 +17,17 @@ struct QuickStreamView: View {
         notes
             .filter { !$0.isArchived }
             .filter { note in
+                // A locked note is only findable by its explicit title, so searching
+                // can never surface the body of a note the user chose to hide.
+                let searchable: String
+                if note.isLocked {
+                    searchable = note.title
+                } else {
+                    searchable = note.title + "\n" + note.content
+                }
+
                 let matchesQuery = searchText.isEmpty
-                    || note.title.localizedCaseInsensitiveContains(searchText)
-                    || note.content.localizedCaseInsensitiveContains(searchText)
+                    || searchable.localizedCaseInsensitiveContains(searchText)
                 let matchesTag = selectedTag.map { note.tag?.id == $0.id } ?? true
                 return matchesQuery && matchesTag
             }

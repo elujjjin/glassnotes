@@ -7,29 +7,50 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build unsigned .ipa for LiveContainer
     runs-on: macos-15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Prefer the newest Xcode available on the runner, whatever it is named.
+      # Falling back keeps the build working if the image stops shipping Xcode 26.
       - name: Select Xcode
+        id: xcode
         run: |
-          XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
-          if [ -z "$XCODE" ]; then
-            XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          set -euo pipefail
+          SELECTED=""
+          for CANDIDATE in /Applications/Xcode_26*.app; do
+            if [ -d "$CANDIDATE" ]; then SELECTED="$CANDIDATE"; fi
+          done
+          if [ -z "$SELECTED" ]; then
+            # `|| true` keeps pipefail from aborting before the error below.
+            for CANDIDATE in $(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V || true); do
+              SELECTED="$CANDIDATE"
+            done
           fi
-          echo "Using $XCODE"
-          sudo xcode-select -s "$XCODE/Contents/Developer"
+          if [ -z "$SELECTED" ]; then
+            echo "No Xcode found on this runner." >&2
+            exit 1
+          fi
+          echo "Using $SELECTED"
+          sudo xcode-select -s "$SELECTED/Contents/Developer"
+          echo "path=$SELECTED" >> "$GITHUB_OUTPUT"
 
       - name: Show Xcode Version
         run: xcodebuild -version
 
       - name: Build App Payload
         run: |
+          set -euo pipefail
           mkdir -p build/derivedData
           xcodebuild build \
             -project GlassNotes.xcodeproj \
@@ -41,17 +62,35 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Create LiveContainer .ipa Package
+      - name: Verify App Bundle
         run: |
-          mkdir -p Payload
-          APP_PATH=$(find build/derivedData/Build/Products/Release-iphoneos -name "*.app" | head -n 1)
+          set -euo pipefail
+          APP_PATH=$(find build/derivedData/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -n 1)
           if [ -z "$APP_PATH" ]; then
-            echo "Error: Could not find built .app bundle!"
+            echo "Error: Could not find built .app bundle!" >&2
             exit 1
           fi
-          echo "Found app bundle at $APP_PATH"
-          cp -R "$APP_PATH" Payload/
-          zip -r GlassNotes.ipa Payload
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+          if [ ! -f "$APP_PATH/Info.plist" ]; then
+            echo "Error: $APP_PATH has no Info.plist" >&2
+            exit 1
+          fi
+          if [ ! -x "$APP_PATH/GlassNotes" ]; then
+            echo "Error: $APP_PATH has no executable" >&2
+            exit 1
+          fi
+          echo "Bundle contents:"
+          ls -la "$APP_PATH"
+
+      - name: Create LiveContainer .ipa Package
+        run: |
+          set -euo pipefail
+          STAGE="build/ipa/Payload"
+          rm -rf build/ipa GlassNotes.ipa
+          mkdir -p "$STAGE"
+          cp -R "$APP_PATH" "$STAGE/"
+          # -X drops extra file attributes so repeated builds are reproducible.
+          (cd build/ipa && zip -r -X -q ../../GlassNotes.ipa Payload)
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
@@ -59,3 +98,4 @@ jobs:
           name: GlassNotes-LiveContainer-IPA
           path: GlassNotes.ipa
           retention-days: 30
+          if-no-files-found: error

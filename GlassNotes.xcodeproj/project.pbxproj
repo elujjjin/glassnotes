@@ -25,6 +25,8 @@
 				A10000102C10000000000010 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000152C10000000000015 /* SettingsView.swift */; };
 		A10000112C10000000000013 /* LiquidGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000132C10000000000013 /* LiquidGlass.swift */; };
 		A10000122C10000000000014 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000142C10000000000014 /* AppearanceStore.swift */; };
+		A10000132C10000000000015 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000172C10000000000017 /* MarkdownText.swift */; };
+		A10000142C10000000000016 /* MarkdownTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000182C10000000000018 /* MarkdownTextEditor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,8 @@
 		B10000142C10000000000014 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
 		B10000152C10000000000015 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10000122C10000000000012 /* GlassNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GlassNotes.entitlements; sourceTree = "<group>"; };
+		B10000172C10000000000017 /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
+		B10000182C10000000000018 /* MarkdownTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTextEditor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -128,6 +132,7 @@
 				B10000072C10000000000007 /* GlassBackground.swift */,
 				B10000082C10000000000008 /* GlassCard.swift */,
 				B10000092C10000000000009 /* GlassSearchBar.swift */,
+				B10000172C10000000000017 /* MarkdownText.swift */,
 				B100000A2C1000000000000A /* GlassButton.swift */,
 			);
 			path = Components;
@@ -147,6 +152,7 @@
 			children = (
 				B100000D2C1000000000000D /* NoteEditorView.swift */,
 				B100000E2C1000000000000E /* FormattingBar.swift */,
+				B10000182C10000000000018 /* MarkdownTextEditor.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -234,11 +240,13 @@
 				A10000072C10000000000007 /* GlassBackground.swift in Sources */,
 				A10000082C10000000000008 /* GlassCard.swift in Sources */,
 				A10000092C10000000000009 /* GlassSearchBar.swift in Sources */,
+						A10000132C10000000000015 /* MarkdownText.swift in Sources */,
 				A100000A2C1000000000000A /* GlassButton.swift in Sources */,
 				A100000B2C1000000000000B /* QuickStreamView.swift in Sources */,
 				A100000C2C1000000000000C /* NoteCardView.swift in Sources */,
 				A100000D2C1000000000000D /* NoteEditorView.swift in Sources */,
 				A100000E2C1000000000000E /* FormattingBar.swift in Sources */,
+				A10000142C10000000000016 /* MarkdownTextEditor.swift in Sources */,
 				A100000F2C1000000000000F /* LockView.swift in Sources */,
 				A10000112C10000000000013 /* LiquidGlass.swift in Sources */,
 				A10000122C10000000000014 /* AppearanceStore.swift in Sources */,

@@ -15,6 +15,9 @@ struct SettingsView: View {
     @State private var isBiometricLockOn = false
     @State private var newTagName = ""
     @State private var photoSelection: PhotosPickerItem?
+    @State private var includeLockedNotes = false
+    @State private var tagPendingDeletion: CategoryTag?
+    @State private var newTagColorHex = TagPalette.defaults.first ?? "#007AFF"
 
     private var config: SyncConfig? { configs.first }
 
@@ -159,8 +162,7 @@ struct SettingsView: View {
                         .foregroundStyle(.white)
                     Spacer()
                     Button {
-                        context.delete(tag)
-                        try? context.save()
+                        tagPendingDeletion = tag
                     } label: {
                         Image(systemName: "trash")
                             .font(.system(size: 12))
@@ -170,6 +172,29 @@ struct SettingsView: View {
                     .accessibilityLabel("Delete \(tag.name)")
                 }
             }
+
+            ColorPickerRow(selection: $newTagColorHex)
+        }
+        .confirmationDialog(
+            "Delete tag?",
+            isPresented: Binding(
+                get: { tagPendingDeletion != nil },
+                set: { if !$0 { tagPendingDeletion = nil } }
+            ),
+            titleVisibility: .visible,
+            presenting: tagPendingDeletion
+        ) { tag in
+            Button("Delete \"\(tag.name)\"", role: .destructive) {
+                context.delete(tag)
+                try? context.save()
+                tagPendingDeletion = nil
+            }
+            Button("Cancel", role: .cancel) { tagPendingDeletion = nil }
+        } message: { tag in
+            let count = notes.filter { $0.tag?.id == tag.id }.count
+            return count == 0
+                ? "This tag is not in use."
+                : "\(count) note\(count == 1 ? "" : "s") will lose this tag. The notes themselves are kept."
         }
     }
 
@@ -189,13 +214,27 @@ struct SettingsView: View {
                 }
                 .accessibilityLabel("Export notes as JSON")
             }
+
+            Toggle(isOn: $includeLockedNotes) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Include locked notes")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.white)
+                    Text(includeLockedNotes
+                         ? "Locked note bodies will be exported in plain text."
+                         : "Locked note bodies are redacted from the export.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .tint(.accentColor)
         }
     }
 
     private var exportPayload: String {
         let payload = notes
             .sorted { $0.updatedAt > $1.updatedAt }
-            .map(NoteRecord.init)
+            .map { NoteRecord(note: $0, includeContent: includeLockedNotes || !$0.isLocked) }
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -238,7 +277,7 @@ struct SettingsView: View {
         let name = newTagName.trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
 
-        context.insert(CategoryTag(name: name))
+        context.insert(CategoryTag(name: name, colorHex: newTagColorHex))
         try? context.save()
         newTagName = ""
     }
@@ -256,16 +295,20 @@ struct NoteRecord: Encodable {
     let tag: String
     let pinned: Bool
     let locked: Bool
+    let redacted: Bool
     let createdAt: Date
     let updatedAt: Date
 
-    init(note: Note) {
+    /// - Parameter includeContent: when `false` the body is replaced with a
+    ///   placeholder so an export cannot leak a note the user chose to lock.
+    init(note: Note, includeContent: Bool) {
         id = note.id.uuidString
         title = note.title
-        content = note.content
+        content = includeContent ? note.content : ""
         tag = note.tag?.name ?? ""
         pinned = note.isPinned
         locked = note.isLocked
+        redacted = !includeContent
         createdAt = note.createdAt
         updatedAt = note.updatedAt
     }
@@ -309,6 +352,49 @@ struct LabeledField: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .liquidGlass(GlassConfig(cornerRadius: 12))
+        }
+    }
+}
+
+/// Fixed palette used when creating tags. Keeping it curated (rather than a
+/// free colour picker) means tag colours stay legible against every wallpaper.
+enum TagPalette {
+    static let defaults = [
+        "#FF9500", "#007AFF", "#34C759", "#AF52DE",
+        "#FF3B30", "#FF2D55", "#00C7BE", "#FFD60A",
+    ]
+}
+
+struct ColorPickerRow: View {
+    @Binding var selection: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("New tag colour")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                ForEach(TagPalette.defaults, id: \.self) { hex in
+                    Button {
+                        selection = hex
+                    } label: {
+                        Circle()
+                            .fill(Color(hex: hex))
+                            .frame(width: 24, height: 24)
+                            .overlay {
+                                Circle().strokeBorder(.white, lineWidth: selection == hex ? 2.5 : 0)
+                            }
+                            .overlay {
+                                Circle().strokeBorder(.black.opacity(0.25), lineWidth: 1)
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Tag colour \(hex)")
+                    .accessibilityAddTraits(selection == hex ? [.isSelected] : [])
+                }
+                Spacer(minLength: 0)
+            }
         }
     }
 }

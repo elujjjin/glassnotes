@@ -14,6 +14,10 @@ struct NoteEditorView: View {
     @State private var selectedTag: CategoryTag?
     @State private var isPreviewing = false
     @State private var syncStatus: String?
+    @State private var isSendingTelegram = false
+    @State private var persistedNote: Note?
+    @State private var editorSelection = NSRange(location: 0, length: 0)
+    @FocusState private var isEditorFocused: Bool
 
     private let note: Note?
 
@@ -135,9 +139,16 @@ struct NoteEditorView: View {
                 }
 
                 if let config = configs.first, !config.telegramBotToken.isEmpty {
-                    ToggleChip(icon: "paperplane", title: "Telegram", tint: .white, isOn: false) {
+                    ToggleChip(
+                        icon: isSendingTelegram ? "ellipsis" : "paperplane",
+                        title: isSendingTelegram ? "Sending…" : "Telegram",
+                        tint: .white,
+                        isOn: note?.telegramMessageId != nil
+                    ) {
                         sendToTelegram(config)
                     }
+                    .disabled(isSendingTelegram)
+                    .opacity(isSendingTelegram ? 0.6 : 1)
                 }
             }
             .padding(.horizontal, 20)
@@ -161,25 +172,29 @@ struct NoteEditorView: View {
     private var editor: some View {
         if isPreviewing {
             ScrollView {
-                Text(LocalizedStringKey(content.isEmpty ? "Nothing to preview." : content))
-                    .font(.system(size: 16))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(16)
-                    .liquidGlass(GlassConfig.field)
-                    .padding(.horizontal, 20)
+                if content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text("Nothing to preview.")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.tertiary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    MarkdownText(source: content, baseFont: .system(size: 16))
+                }
             }
+            .padding(.horizontal, 20)
         } else {
             VStack(spacing: 10) {
-                TextEditor(text: $content)
-                    .font(.system(size: 16))
-                    .foregroundStyle(.white)
-                    .scrollContentBackground(.hidden)
+                MarkdownTextEditor(text: $content, selection: $editorSelection)
+                    .frame(minHeight: 220)
                     .padding(12)
                     .liquidGlass(GlassConfig.field)
                     .padding(.horizontal, 20)
 
-                FormattingBar(text: $content)
+                FormattingBar(
+                    text: $content,
+                    selection: $editorSelection,
+                    isEditorFocused: $isEditorFocused
+                )
                     .padding(.horizontal, 20)
 
                 HStack {
@@ -199,42 +214,74 @@ struct NoteEditorView: View {
     }
 
     private func save() {
+        // Refuse to create empty notes from a stray tap on Save.
+        if title.isEmpty && content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            dismiss()
+            return
+        }
+
         if let note {
+            let changed = note.title != title
+                || note.content != content
+                || note.isPinned != isPinned
+                || note.isLocked != isLocked
+                || note.tag?.id != selectedTag?.id
+
             note.title = title
             note.content = content
             note.isPinned = isPinned
             note.isLocked = isLocked
             note.tag = selectedTag
-            note.updatedAt = Date()
+            // Only bump the timestamp when something actually changed, so an
+            // open-then-close does not reorder the feed.
+            if changed { note.updatedAt = Date() }
         } else {
-            context.insert(
-                Note(
-                    title: title,
-                    content: content,
-                    isPinned: isPinned,
-                    isLocked: isLocked,
-                    tag: selectedTag
-                )
+            let created = Note(
+                title: title,
+                content: content,
+                isPinned: isPinned,
+                isLocked: isLocked,
+                tag: selectedTag
             )
+            context.insert(created)
+            persistedNote = created
         }
         try? context.save()
         dismiss()
     }
 
     private func sendToTelegram(_ config: SyncConfig) {
+        guard !isSendingTelegram else { return }
+
+        isSendingTelegram = true
         syncStatus = "Sending…"
-        let heading = title.isEmpty ? "Quick note" : title
-        let body = content
 
         Task {
             let service = TelegramSyncService()
-            _ = await service.sendNoteToTelegram(
+            let messageId = await service.sendNoteToTelegram(
                 botToken: config.telegramBotToken,
                 chatId: config.telegramChatId,
-                noteTitle: heading,
-                noteContent: body
+                noteTitle: title.isEmpty ? "Quick note" : title,
+                noteContent: content
             )
+            isSendingTelegram = false
             syncStatus = service.statusMessage
+
+            // Remember what was sent so a re-send can be recognised later.
+            if let messageId {
+                if let note {
+                    note.telegramMessageId = messageId
+                } else if let created = persistedNote {
+                    created.telegramMessageId = messageId
+                }
+                try? context.save()
+            }
+
+            // Let the confirmation linger briefly, then fade it out.
+            try? await Task.sleep(for: .seconds(3))
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if syncStatus == service.statusMessage { syncStatus = nil }
+            }
         }
     }
 }

@@ -64,15 +64,25 @@ struct MainContentView: View {
 
     private func seedTagsIfNeeded() {
         guard !didSeedTags else { return }
-        didSeedTags = true
 
-        let existing = try? context.fetchCount(FetchDescriptor<CategoryTag>())
-        guard existing == 0 else { return }
+        // Only mark seeding as done once it has actually succeeded, so a
+        // transient store failure does not permanently skip the default tags.
+        let existing = (try? context.fetchCount(FetchDescriptor<CategoryTag>())) ?? 0
+        guard existing == 0 else {
+            didSeedTags = true
+            return
+        }
 
         for (name, hex, icon) in defaultTags {
             context.insert(CategoryTag(name: name, colorHex: hex, iconName: icon))
         }
-        try? context.save()
+
+        do {
+            try context.save()
+            didSeedTags = true
+        } catch {
+            // Leave the flag unset so the next launch retries.
+        }
     }
 }
 
