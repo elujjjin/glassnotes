@@ -9,8 +9,11 @@ public final class CategoryTag {
     public var colorHex: String
     public var iconName: String
     
-    @Relationship(deleteRule: .nullify)
-    public var notes: [Note]?
+    /// Inverse of `Note.tags`, which declares the `@Relationship` and the
+    /// `inverse:` for this pair. Deliberately a non-optional array: SwiftData
+    /// cannot build a schema where an `inverse:` points at an optional
+    /// to-many, and the resulting `ModelContainer` failure is fatal at launch.
+    public var notes: [Note] = []
     
     public init(
         id: UUID = UUID(),
