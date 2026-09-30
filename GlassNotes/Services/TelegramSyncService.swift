@@ -54,18 +54,48 @@ public final class TelegramSyncService: ObservableObject {
         """
 
         let chunks = Self.split(formatted, limit: Self.messageLimit)
+        let total = chunks.count
         var firstMessageId: Int64?
+
+        // Only bother the Dynamic Island for genuinely multi-part sends; a
+        // single-message note finishes faster than the activity can appear.
+        if total > 1 {
+            TelegramSendActivity.start(
+                noteTitle: heading.isEmpty ? "Quick note" : heading,
+                totalParts: total
+            )
+        }
 
         for (index, chunk) in chunks.enumerated() {
             switch await Self.post(text: chunk, to: url, chatId: chat) {
             case .success(let messageId):
                 if firstMessageId == nil { firstMessageId = messageId }
+                if total > 1 {
+                    TelegramSendActivity.update(
+                        partsSent: index + 1,
+                        totalParts: total,
+                        status: "Sending…"
+                    )
+                }
             case .failure(let message):
+                if total > 1 {
+                    TelegramSendActivity.finish(
+                        partsSent: index,
+                        totalParts: total,
+                        finalStatus: "Stopped at \(index) of \(total)"
+                    )
+                }
                 statusMessage = chunks.count > 1
                     ? "Sent \(index) of \(chunks.count) parts, then failed: \(message)"
                     : "Telegram sync failed: \(message)"
                 return firstMessageId
             }
+        }
+
+        if total > 1 {
+            TelegramSendActivity.finish(
+                partsSent: total, totalParts: total, finalStatus: "Sent \(total) parts"
+            )
         }
 
         statusMessage = chunks.count > 1

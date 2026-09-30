@@ -24,6 +24,10 @@
 	<string>GlassNotes uses Face ID to protect your private notes and secret scratchpads.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>GlassNotes requires access to add photo attachments to your private notes.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>GlassNotes requires access to snap photo attachments directly into your notes.</string>
 	<key>UIApplicationSceneManifest</key>

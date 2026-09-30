@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UIKit
 
 @main
 struct GlassNotesApp: App {
@@ -94,7 +93,6 @@ struct MainContentView: View {
     @EnvironmentObject private var auth: BiometricAuthService
     @EnvironmentObject private var appearance: AppearanceStore
     @Environment(\.modelContext) private var context
-    @Environment(\.scenePhase) private var scenePhase
     @Query private var configs: [SyncConfig]
     @AppStorage("didSeedTags") private var didSeedTags = false
 
@@ -124,16 +122,10 @@ struct MainContentView: View {
                 appearance.accentColorHex = hex
             }
         }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .background {
-                NotificationCenter.default.post(
-                    name: UIApplication.didEnterBackgroundNotification, object: nil)
-            } else if phase == .active {
-                NotificationCenter.default.post(
-                    name: UIApplication.willEnterForegroundNotification, object: nil)
-            }
-        }
         .onReceive(NotificationCenter.default.publisher(for: .autoLockCheck)) { note in
+            // `AutoLockService` listens to UIKit's own lifecycle notifications,
+            // so this view must not re-post them from `scenePhase`: doing so
+            // delivered every background/foreground transition twice.
             guard let backgroundedAt = note.object as? Date,
                   let minutes = config?.autoLockMinutes,
                   minutes > 0 else { return }

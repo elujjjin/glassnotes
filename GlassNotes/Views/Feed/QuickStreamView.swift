@@ -288,6 +288,7 @@ struct QuickStreamView: View {
                             Button {
                                 note.isArchived = true
                                 try? context.save()
+                                WidgetDataWriter.shared.sync(context: context)
                                 HapticsService.shared.impact(.medium, enabled: hapticsEnabled)
                             } label: {
                                 Label("Archive", systemImage: "archivebox")
@@ -298,6 +299,7 @@ struct QuickStreamView: View {
                             Button(role: .destructive) {
                                 context.delete(note)
                                 try? context.save()
+                                WidgetDataWriter.shared.sync(context: context)
                                 HapticsService.shared.notification(.warning, enabled: hapticsEnabled)
                             } label: {
                                 Label("Delete", systemImage: "trash")
@@ -371,6 +373,7 @@ struct QuickStreamView: View {
         context.insert(note)
         try? context.save()
         quickText = ""
+        WidgetDataWriter.shared.sync(context: context)
         HapticsService.shared.impact(.light, enabled: hapticsEnabled)
     }
 }

@@ -25,20 +25,18 @@ final class AutoLockService: ObservableObject {
             .store(in: &cancellables)
     }
 
-    /// Called with the current config whenever the user changes the timer.
-    func checkAutoLock(autoLockMinutes: Int = 0, auth: BiometricAuthService) {
-        guard autoLockMinutes > 0, let bg = backgroundedAt else { return }
-        let elapsed = Date().timeIntervalSince(bg) / 60
-        if elapsed >= Double(autoLockMinutes) {
-            auth.lock()
-        }
-        backgroundedAt = nil
-    }
-
+    /// Hands the background timestamp to the view layer, which owns the
+    /// configured timeout (it lives in SwiftData, not here), then clears it.
+    ///
+    /// Clearing is essential: without it the first recorded timestamp is never
+    /// replaced, so the elapsed time is measured from the *first* backgrounding
+    /// of the session rather than the most recent one, and the app re-locks
+    /// earlier than the user asked for.
     private func checkAutoLock() {
         // The foreground notification fires before the view hierarchy updates,
         // so post a deferred notification for the view layer to handle.
         NotificationCenter.default.post(name: .autoLockCheck, object: backgroundedAt)
+        backgroundedAt = nil
     }
 }
 

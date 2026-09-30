@@ -7,6 +7,16 @@ enum Wallpaper: String, CaseIterable, Identifiable {
     case prism
     case grid
     case silk
+    // Added later: flat colours and simple pattern work, not just gradients.
+    case midnight
+    case parchment
+    case forest
+    case ember
+    case mono
+    case floral
+    case skull
+    case cross
+    case topo
 
     var id: String { rawValue }
 
@@ -17,6 +27,15 @@ enum Wallpaper: String, CaseIterable, Identifiable {
         case .prism: return "Prism"
         case .grid: return "Lattice"
         case .silk: return "Silk"
+        case .midnight: return "Midnight"
+        case .parchment: return "Parchment"
+        case .forest: return "Forest"
+        case .ember: return "Ember"
+        case .mono: return "Mono"
+        case .floral: return "Floral"
+        case .skull: return "Skull"
+        case .cross: return "Crosses"
+        case .topo: return "Topo"
         }
     }
 }
@@ -39,6 +58,13 @@ final class AppearanceStore: ObservableObject {
         didSet { defaults.set(Double(editorFontSize), forKey: Keys.editorFontSize) }
     }
 
+    /// User-saved accent colours, newest last. Persisted so custom palettes
+    /// survive relaunch; the built-in `TagPalette.defaults` are not stored here
+    /// because they ship with the app.
+    @Published var accentPresets: [AccentPreset] {
+        didSet { persistPresets() }
+    }
+
     private let defaults: UserDefaults
 
     private enum Keys {
@@ -46,6 +72,7 @@ final class AppearanceStore: ObservableObject {
         static let photo = "appearance.photo"
         static let accentColor = "appearance.accentColor"
         static let editorFontSize = "appearance.editorFontSize"
+        static let accentPresets = "appearance.accentPresets"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -56,7 +83,57 @@ final class AppearanceStore: ObservableObject {
         self.accentColorHex = defaults.string(forKey: Keys.accentColor) ?? "#007AFF"
         let storedSize = defaults.double(forKey: Keys.editorFontSize)
         self.editorFontSize = storedSize > 0 ? CGFloat(storedSize) : 16
+        self.accentPresets = Self.loadPresets(from: defaults)
     }
+
+    /// Adds a preset, or removes it if that colour is already saved.
+    ///
+    /// Tapping an existing swatch to toggle it off is the behaviour people
+    /// expect from a preset list, and avoids a separate delete affordance.
+    /// A colour already in the list has its name refreshed rather than
+    /// producing a duplicate swatch.
+    func togglePreset(named name: String, hex: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalised = hex.uppercased()
+        let label = trimmed.isEmpty ? normalised : trimmed
+
+        if let index = accentPresets.firstIndex(where: { $0.hex.uppercased() == normalised }) {
+            // Already saved, so this tap saves the colour and clears the name.
+            guard !label.isEmpty, accentPresets[index].name != label else {
+                accentPresets.remove(at: index)
+                return
+            }
+            accentPresets[index] = AccentPreset(name: label, hex: normalised)
+            return
+        }
+
+        accentPresets.append(AccentPreset(name: label, hex: normalised))
+        // Keep the list bounded; the oldest entries fall off the end.
+        if accentPresets.count > Self.maxPresets {
+            accentPresets.removeFirst(accentPresets.count - Self.maxPresets)
+        }
+    }
+
+    private static let maxPresets = 24
+
+    private func persistPresets() {
+        guard let data = try? JSONEncoder().encode(accentPresets) else { return }
+        defaults.set(data, forKey: Keys.accentPresets)
+    }
+
+    private static func loadPresets(from defaults: UserDefaults) -> [AccentPreset] {
+        guard let data = defaults.data(forKey: Keys.accentPresets),
+              let decoded = try? JSONDecoder().decode([AccentPreset].self, from: data)
+        else { return [] }
+        return decoded
+    }
+}
+
+/// A named accent colour the user saved.
+struct AccentPreset: Codable, Identifiable, Hashable {
+    var name: String
+    var hex: String
+    var id: String { hex.uppercased() }
 
     var usesPhoto: Bool { photo != nil }
 

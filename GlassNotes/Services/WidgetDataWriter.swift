@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import WidgetKit
 
 /// Writes a snapshot of recent non-locked notes to the App Group container so the
@@ -24,6 +25,21 @@ final class WidgetDataWriter {
     }
 
     func sync(notes: [Note]) {
+        write(Array(notes))
+    }
+
+    /// Convenience for the many call sites that only have a `ModelContext` and
+    /// no note array to hand — the widget wants the newest notes anyway, so
+    /// fetching here keeps those call sites to a single line.
+    func sync(context: ModelContext) {
+        let descriptor = FetchDescriptor<Note>(
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+        let notes = (try? context.fetch(descriptor)) ?? []
+        write(notes)
+    }
+
+    private func write(_ notes: [Note]) {
         guard let url = appGroupURL else { return }
 
         let recent = notes

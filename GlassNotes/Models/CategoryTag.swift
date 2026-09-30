@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import UIKit
 
 @Model
 public final class CategoryTag {
@@ -63,5 +64,25 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+
+    /// The inverse of `init(hex:)`, used to turn a `ColorPicker` selection into
+    /// a storable string.
+    ///
+    /// `ColorPicker` hands back a colour in an arbitrary colour space, so the
+    /// components are read through `UIColor`, which converts for us. Alpha is
+    /// deliberately dropped: the picker is configured without opacity support and
+    /// `init(hex:)` treats a 6-digit value as fully opaque. Falls back to black if
+    /// the colour cannot be decomposed.
+    func hexString() -> String {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        guard UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a) else {
+            return "#000000"
+        }
+
+        func channel(_ value: CGFloat) -> Int {
+            min(255, max(0, Int((value * 255).rounded())))
+        }
+        return String(format: "#%02X%02X%02X", channel(r), channel(g), channel(b))
     }
 }

@@ -24,6 +24,8 @@ struct SettingsView: View {
     @State private var newFolderName = ""
     @State private var newFolderColorHex = TagPalette.defaults.first ?? "#007AFF"
     @State private var photoSelection: PhotosPickerItem?
+    @State private var customAccent = Color(hex: "#007AFF")
+    @State private var newPresetName = ""
     @State private var tagPendingDeletion: CategoryTag?
     @State private var folderPendingDeletion: Folder?
 
@@ -134,6 +136,8 @@ struct SettingsView: View {
                 }
             }
 
+            accentCustomSection
+
             // Font size
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -152,6 +156,98 @@ struct SettingsView: View {
                     }
             }
         }
+    }
+
+    // MARK: - Custom accent colours
+
+    private var accentCustomSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                ColorPicker("", selection: $customAccent, supportsOpacity: false)
+                    .labelsHidden()
+                Text("Custom")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(customAccent.hexString())
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(.tertiary)
+                Button("Use") {
+                    let hex = customAccent.hexString()
+                    appearance.accentColorHex = hex
+                    saveAccentColor(hex)
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .liquidGlass(GlassConfig(cornerRadius: 12, interactive: true))
+
+            // Name + save, so presets are recognisable rather than bare swatches.
+            HStack(spacing: 10) {
+                TextField("Preset name", text: $newPresetName)
+                    .font(.system(size: 13))
+                    .textInputAutocapitalization(.words)
+                    .padding(.horizontal, 12).padding(.vertical, 10)
+                    .liquidGlass(GlassConfig(cornerRadius: 12))
+                Button(action: saveCustomPreset) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 40, height: 38)
+                        .liquidGlass(GlassConfig(cornerRadius: 12, interactive: true))
+                }
+                .buttonStyle(.plain)
+                .disabled(newPresetName.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+
+            if !appearance.accentPresets.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(appearance.accentPresets) { preset in
+                            Button {
+                                appearance.accentColorHex = preset.hex
+                                saveAccentColor(preset.hex)
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Circle()
+                                        .fill(Color(hex: preset.hex))
+                                        .frame(width: 26, height: 26)
+                                        .overlay {
+                                            Circle().strokeBorder(
+                                                .white,
+                                                lineWidth: appearance.accentColorHex
+                                                    .uppercased() == preset.hex.uppercased() ? 2.5 : 0
+                                            )
+                                        }
+                                    Text(preset.name)
+                                        .font(.system(size: 9))
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                }
+                                .frame(width: 52)
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button("Delete", role: .destructive) {
+                                    appearance.togglePreset(named: preset.name, hex: preset.hex)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+    }
+
+    private func saveCustomPreset() {
+        let name = newPresetName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return }
+        appearance.togglePreset(named: name, hex: customAccent.hexString())
+        newPresetName = ""
     }
 
     // MARK: - Haptics

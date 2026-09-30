@@ -349,6 +349,8 @@ struct NoteEditorView: View {
             try? context.save()
         }
         draftSaved = true
+        // Debounced by 2s, so this cannot fire per keystroke.
+        WidgetDataWriter.shared.sync(context: context)
         Task {
             try? await Task.sleep(for: .seconds(2))
             withAnimation { draftSaved = false }
@@ -393,6 +395,7 @@ struct NoteEditorView: View {
             context.insert(created)
         }
         try? context.save()
+        WidgetDataWriter.shared.sync(context: context)
         HapticsService.shared.notification(.success, enabled: hapticsEnabled)
         dismiss()
     }
