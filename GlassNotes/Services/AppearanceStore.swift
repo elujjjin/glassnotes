@@ -31,11 +31,21 @@ final class AppearanceStore: ObservableObject {
         didSet { persistPhoto() }
     }
 
+    @Published var accentColorHex: String {
+        didSet { defaults.set(accentColorHex, forKey: Keys.accentColor) }
+    }
+
+    @Published var editorFontSize: CGFloat {
+        didSet { defaults.set(Double(editorFontSize), forKey: Keys.editorFontSize) }
+    }
+
     private let defaults: UserDefaults
 
     private enum Keys {
         static let wallpaper = "appearance.wallpaper"
         static let photo = "appearance.photo"
+        static let accentColor = "appearance.accentColor"
+        static let editorFontSize = "appearance.editorFontSize"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -43,6 +53,9 @@ final class AppearanceStore: ObservableObject {
         let stored = defaults.string(forKey: Keys.wallpaper) ?? ""
         self.wallpaper = Wallpaper(rawValue: stored) ?? .aurora
         self.photo = Self.loadPhoto()
+        self.accentColorHex = defaults.string(forKey: Keys.accentColor) ?? "#007AFF"
+        let storedSize = defaults.double(forKey: Keys.editorFontSize)
+        self.editorFontSize = storedSize > 0 ? CGFloat(storedSize) : 16
     }
 
     var usesPhoto: Bool { photo != nil }

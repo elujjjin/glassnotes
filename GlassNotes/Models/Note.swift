@@ -14,9 +14,16 @@ public final class Note {
     public var isLocked: Bool
     public var telegramMessageId: Int64?
     
-    @Relationship(deleteRule: .nullify)
-    public var tag: CategoryTag?
+    @Relationship(deleteRule: .nullify, inverse: \CategoryTag.notes)
+    public var tags: [CategoryTag]
     
+    /// UUID of the `Folder` this note belongs to, or `nil` for no folder.
+    /// Stored as a raw UUID to avoid a CloudKit-incompatible inverse relationship.
+    public var folderID: UUID?
+
+    /// `true` while auto-save has written unsaved changes.
+    public var isDraft: Bool
+
     public init(
         id: UUID = UUID(),
         title: String = "",
@@ -28,7 +35,9 @@ public final class Note {
         isArchived: Bool = false,
         isLocked: Bool = false,
         telegramMessageId: Int64? = nil,
-        tag: CategoryTag? = nil
+        tags: [CategoryTag] = [],
+        folderID: UUID? = nil,
+        isDraft: Bool = false
     ) {
         self.id = id
         self.title = title
@@ -40,7 +49,9 @@ public final class Note {
         self.isArchived = isArchived
         self.isLocked = isLocked
         self.telegramMessageId = telegramMessageId
-        self.tag = tag
+        self.tags = tags
+        self.folderID = folderID
+        self.isDraft = isDraft
     }
     
     public var displayTitle: String {

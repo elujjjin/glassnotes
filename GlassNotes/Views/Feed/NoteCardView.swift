@@ -6,53 +6,72 @@ struct NoteCardView: View {
 
     var body: some View {
         Button(action: onTap) {
-            GlassCard(cornerRadius: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .top, spacing: 8) {
-                        Text(note.displayTitle)
-                            .font(.system(size: 17, weight: .semibold))
-                            .lineLimit(1)
-                            .foregroundStyle(.white)
-
-                        if note.isPinned {
-                            Image(systemName: "pin.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(.secondary)
-                        }
-                        if note.isLocked {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer(minLength: 0)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: 6) {
+                    if note.isPinned {
+                        Image(systemName: "pin.fill")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.yellow)
                     }
-
+                    Text(note.displayTitle)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    Spacer()
                     if note.isLocked {
-                        Text("Locked — open to reveal")
-                            .font(.system(size: 14))
-                            .foregroundStyle(.tertiary)
-                    } else {
-                        Text(note.snippet)
-                            .font(.system(size: 14))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(3)
-                            .multilineTextAlignment(.leading)
-                    }
-
-                    HStack(spacing: 6) {
-                        if let tag = note.tag {
-                            Label(tag.name, systemImage: tag.iconName)
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(tag.color)
-                        }
-                        Spacer()
-                        Text(note.formattedDate)
+                        Image(systemName: "lock.fill")
                             .font(.system(size: 11))
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.secondary)
+                    }
+                    if note.isDraft {
+                        Text("Draft")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.orange)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color.orange.opacity(0.15))
+                            .clipShape(Capsule())
+                    }
+                    Text(note.formattedDate)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                }
+
+                if !note.isLocked {
+                    Text(note.snippet)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                // Multi-tag pills (up to 3 shown)
+                if !note.tags.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(note.tags.prefix(3)) { tag in
+                            HStack(spacing: 3) {
+                                Image(systemName: tag.iconName)
+                                    .font(.system(size: 9, weight: .semibold))
+                                    .foregroundStyle(tag.color)
+                                Text(tag.name)
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundStyle(.white.opacity(0.7))
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(tag.color.opacity(0.15))
+                            .clipShape(Capsule())
+                            .overlay(Capsule().strokeBorder(tag.color.opacity(0.3), lineWidth: 0.5))
+                        }
+                        if note.tags.count > 3 {
+                            Text("+\(note.tags.count - 3)")
+                                .font(.system(size: 10))
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                 }
             }
+            .padding(14)
+            .liquidGlass(GlassConfig(cornerRadius: 16))
         }
         .buttonStyle(.plain)
     }
