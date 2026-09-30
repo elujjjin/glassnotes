@@ -26,6 +26,12 @@ struct MarkdownTextEditor: UIViewRepresentable {
         view.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
         view.adjustsFontForContentSizeCategory = true
         view.isScrollEnabled = false
+        // The editor is not scrollable, so its intrinsic size comes from its
+        // content. Without this, `textContainer` sizes itself to the longest
+        // line instead of the view's width, and a long line reports a huge
+        // ideal width that expands the whole layout sideways.
+        view.textContainer.widthTracksTextView = true
+        view.textContainer.lineFragmentPadding = 0
         // Markdown punctuation should not be auto-corrected or "smart"-quoted.
         view.autocorrectionType = .no
         view.smartQuotesType = .no
@@ -34,6 +40,20 @@ struct MarkdownTextEditor: UIViewRepresentable {
         view.accessibilityLabel = "Note body"
         view.text = text
         return view
+    }
+
+    /// Reports the height the wrapped text actually needs at the proposed width.
+    ///
+    /// `isScrollEnabled = false` makes the intrinsic height depend on layout that
+    /// has not happened yet, so without this the view can report a stale height
+    /// and clip long notes. Returning a size that honours the proposed width also
+    /// stops a long line from widening the parent.
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {
+        guard let width = proposal.width, width > 0 else { return nil }
+        let widthThatFits = uiView.sizeThatFits(
+            CGSize(width: width, height: .greatestFiniteMagnitude)
+        )
+        return CGSize(width: width, height: widthThatFits.height)
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {

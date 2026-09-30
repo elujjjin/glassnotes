@@ -339,6 +339,10 @@ struct QuickStreamView: View {
                 .lineLimit(1...4)
                 .textInputAutocapitalization(.sentences)
                 .onSubmit(capture)
+                // A vertical-axis TextField reports an ideal width based on its
+                // longest line, which can widen this row and push the send button
+                // off screen. Claim the available width so the text wraps instead.
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 11)
                 .liquidGlass(GlassConfig.field)
