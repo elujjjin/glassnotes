@@ -10,11 +10,14 @@ struct GlassBackground: View {
 
     /// Thumbnails live inside a fixed frame, so they must not ignore the safe
     /// area or the wallpaper would spill over the grid cell.
-    var ignoresSafeArea: Bool = true
+    ///
+    /// `ignoresSafeArea` has no `Bool` overload, so this is applied by
+    /// branching rather than passing the flag through.
+    var expandsIntoSafeArea: Bool = true
 
-    init(forcedWallpaper: Wallpaper? = nil, ignoresSafeArea: Bool = true) {
+    init(forcedWallpaper: Wallpaper? = nil, expandsIntoSafeArea: Bool = true) {
         self.forcedWallpaper = forcedWallpaper
-        self.ignoresSafeArea = ignoresSafeArea
+        self.expandsIntoSafeArea = expandsIntoSafeArea
     }
 
     var body: some View {
@@ -34,7 +37,7 @@ struct GlassBackground: View {
                 layer(for: forcedWallpaper ?? appearance.wallpaper)
             }
         }
-        .ignoresSafeArea(ignoresSafeArea)
+        .modifier(SafeAreaExpansion(expands: expandsIntoSafeArea))
         .accessibilityHidden(true)
     }
 
@@ -437,6 +440,22 @@ struct GlassBackground: View {
     }
 }
 
+/// Applies `ignoresSafeArea` only when `expands` is true.
+///
+/// `ignoresSafeArea(_:)` takes a `SafeAreaRegions` value and has no `Bool`
+/// overload, so the choice has to be made at the type level.
+private struct SafeAreaExpansion: ViewModifier {
+    let expands: Bool
+
+    func body(content: Content) -> some View {
+        if expands {
+            content.ignoresSafeArea()
+        } else {
+            content
+        }
+    }
+}
+
 struct WallpaperPreview: View {
     let wallpaper: Wallpaper
     var isSelected: Bool
@@ -446,7 +465,7 @@ struct WallpaperPreview: View {
             // Render the real wallpaper rather than a hand-written thumbnail, so
             // the preview can never drift from what the user actually gets and
             // new wallpapers need no matching preview case.
-            GlassBackground(forcedWallpaper: wallpaper, ignoresSafeArea: false)
+            GlassBackground(forcedWallpaper: wallpaper, expandsIntoSafeArea: false)
 
             RoundedRectangle(cornerRadius: 10)
                 .stroke(.white.opacity(isSelected ? 0.9 : 0.18), lineWidth: isSelected ? 2 : 1)

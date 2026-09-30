@@ -127,13 +127,6 @@ final class AppearanceStore: ObservableObject {
         else { return [] }
         return decoded
     }
-}
-
-/// A named accent colour the user saved.
-struct AccentPreset: Codable, Identifiable, Hashable {
-    var name: String
-    var hex: String
-    var id: String { hex.uppercased() }
 
     var usesPhoto: Bool { photo != nil }
 
@@ -165,4 +158,11 @@ struct AccentPreset: Codable, Identifiable, Hashable {
             try? FileManager.default.removeItem(at: url)
         }
     }
+}
+
+/// A named accent colour the user saved.
+struct AccentPreset: Codable, Identifiable, Hashable {
+    var name: String
+    var hex: String
+    var id: String { hex.uppercased() }
 }
