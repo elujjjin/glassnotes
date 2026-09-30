@@ -27,6 +27,13 @@
 		A10000122C10000000000014 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000142C10000000000014 /* AppearanceStore.swift */; };
 		A10000132C10000000000015 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000172C10000000000017 /* MarkdownText.swift */; };
 		A10000142C10000000000016 /* MarkdownTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000182C10000000000018 /* MarkdownTextEditor.swift */; };
+		A10000152C10000000000019 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000192C10000000000019 /* Folder.swift */; };
+		A10000162C1000000000001A /* AutoLockService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001A2C1000000000001A /* AutoLockService.swift */; };
+		A10000172C1000000000001B /* HapticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001B2C1000000000001B /* HapticsService.swift */; };
+		A10000182C1000000000001C /* LiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001C2C1000000000001C /* LiveActivityAttributes.swift */; };
+		A10000192C1000000000001D /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001D2C1000000000001D /* WidgetDataWriter.swift */; };
+		A100001A2C1000000000001E /* ArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001E2C1000000000001E /* ArchiveView.swift */; };
+		A100001B2C1000000000001F /* FolderManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001F2C1000000000001F /* FolderManagerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +60,13 @@
 		B10000122C10000000000012 /* GlassNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GlassNotes.entitlements; sourceTree = "<group>"; };
 		B10000172C10000000000017 /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
 		B10000182C10000000000018 /* MarkdownTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTextEditor.swift; sourceTree = "<group>"; };
+		B10000192C10000000000019 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
+		B100001A2C1000000000001A /* AutoLockService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLockService.swift; sourceTree = "<group>"; };
+		B100001B2C1000000000001B /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
+		B100001C2C1000000000001C /* LiveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityAttributes.swift; sourceTree = "<group>"; };
+		B100001D2C1000000000001D /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
+		B100001E2C1000000000001E /* ArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveView.swift; sourceTree = "<group>"; };
+		B100001F2C1000000000001F /* FolderManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderManagerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -99,6 +113,7 @@
 				B10000022C10000000000002 /* Note.swift */,
 				B10000032C10000000000003 /* CategoryTag.swift */,
 				B10000042C10000000000004 /* SyncConfig.swift */,
+				B10000192C10000000000019 /* Folder.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -107,8 +122,12 @@
 			isa = PBXGroup;
 			children = (
 				B10000142C10000000000014 /* AppearanceStore.swift */,
+				B100001A2C1000000000001A /* AutoLockService.swift */,
 				B10000052C10000000000005 /* BiometricAuthService.swift */,
+				B100001B2C1000000000001B /* HapticsService.swift */,
+				B100001C2C1000000000001C /* LiveActivityAttributes.swift */,
 				B10000062C10000000000006 /* TelegramSyncService.swift */,
+				B100001D2C1000000000001D /* WidgetDataWriter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -143,6 +162,8 @@
 			children = (
 				B100000B2C1000000000000B /* QuickStreamView.swift */,
 				B100000C2C1000000000000C /* NoteCardView.swift */,
+				B100001E2C1000000000001E /* ArchiveView.swift */,
+				B100001F2C1000000000001F /* FolderManagerView.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -251,6 +272,13 @@
 				A10000112C10000000000013 /* LiquidGlass.swift in Sources */,
 				A10000122C10000000000014 /* AppearanceStore.swift in Sources */,
 				A10000102C10000000000010 /* SettingsView.swift in Sources */,
+				A10000152C10000000000019 /* Folder.swift in Sources */,
+				A10000162C1000000000001A /* AutoLockService.swift in Sources */,
+				A10000172C1000000000001B /* HapticsService.swift in Sources */,
+				A10000182C1000000000001C /* LiveActivityAttributes.swift in Sources */,
+				A10000192C1000000000001D /* WidgetDataWriter.swift in Sources */,
+				A100001A2C1000000000001E /* ArchiveView.swift in Sources */,
+				A100001B2C1000000000001F /* FolderManagerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import UIKit
 
 /// Watches app-lifecycle notifications and locks the auth service after
 /// the user-configured idle timeout.
@@ -44,6 +45,3 @@ final class AutoLockService: ObservableObject {
 extension Notification.Name {
     static let autoLockCheck = Notification.Name("com.glassnotes.autoLockCheck")
 }
-
-// UIApplication import
-import UIKit
