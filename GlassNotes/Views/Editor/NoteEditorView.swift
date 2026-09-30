@@ -40,6 +40,7 @@ struct NoteEditorView: View {
                     optionBar
                     titleField
                     editor
+                    Spacer(minLength: 0)
                 }
 
                 if let syncStatus {
@@ -184,8 +185,10 @@ struct NoteEditorView: View {
             .padding(.horizontal, 20)
         } else {
             VStack(spacing: 10) {
+                // Grow to fill the available height so the formatting bar and the
+                // word counter stay anchored at the bottom of the screen.
                 MarkdownTextEditor(text: $content, selection: $editorSelection)
-                    .frame(minHeight: 220)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(12)
                     .liquidGlass(GlassConfig.field)
                     .padding(.horizontal, 20)

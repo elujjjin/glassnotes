@@ -42,13 +42,17 @@ struct QuickStreamView: View {
                 VStack(spacing: 12) {
                     header
                     GlassSearchBar(text: $searchText, placeholder: "Search notes")
+                        .padding(.horizontal, 20)
                     tagFilter
                     feed
                 }
 
                 composer
             }
-            .navigationDestination(isPresented: $isComposing) {
+            // The editor is presented as a full-screen cover. It brings its own
+            // NavigationStack, so pushing it as a navigationDestination nested
+            // two stacks and left the feed's header visible underneath.
+            .fullScreenCover(isPresented: $isComposing) {
                 NoteEditorView(note: nil)
             }
             .sheet(item: $editingNote) { note in

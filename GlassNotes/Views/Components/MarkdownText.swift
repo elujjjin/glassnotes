@@ -372,8 +372,7 @@ struct MarkdownText: View {
     private func view(for block: MarkdownBlock) -> some View {
         switch block.kind {
         case .heading(let level):
-            inline(block.text)
-                .font(headingFont(level))
+            inline(block.text, baseFontOverride: headingFont(level))
                 .padding(.top, level <= 2 ? 4 : 0)
 
         case .paragraph:
@@ -383,8 +382,7 @@ struct MarkdownText: View {
             row(indent: indent) {
                 bulletGlyph(checked: checked)
             } content: {
-                inline(block.text)
-                    .strikethrough(checked == true, color: .secondary)
+                inline(block.text, forceStrikethrough: checked == true)
             }
 
         case .ordered(let indent, let marker):
@@ -402,8 +400,7 @@ struct MarkdownText: View {
                 Capsule()
                     .fill(Color.accentColor.opacity(0.7))
                     .frame(width: 3)
-                inline(block.text)
-                    .italic()
+                inline(block.text, forceItalic: true)
             }
             .padding(.leading, CGFloat(indent) * 16)
 
@@ -460,24 +457,37 @@ struct MarkdownText: View {
 
     /// Builds one `AttributedString` from the inline tokens, so a single `Text`
     /// renders mixed styles and keeps real links tappable.
-    private func inline(_ text: String) -> Text {
+    ///
+    /// - Parameter baseFontOverride: the font to build from. Headings pass their
+    ///   own font here rather than applying `.font()` to the returned `Text`,
+    ///   because a run-level `font` attribute in an `AttributedString` takes
+    ///   precedence over any view-level font and would silently win.
+    private func inline(
+        _ text: String,
+        baseFontOverride: Font? = nil,
+        forceItalic: Bool = false,
+        forceStrikethrough: Bool = false
+    ) -> Text {
+        let effectiveFont = baseFontOverride ?? baseFont
         var result = AttributedString()
 
         for token in MarkdownInline.tokenize(text) {
             var piece = AttributedString(token.text)
+            let strike = token.isStrikethrough || forceStrikethrough
 
             if token.isCode {
                 piece.font = .system(size: 15, design: .monospaced)
                 piece.backgroundColor = .white.opacity(0.10)
                 piece.foregroundColor = .white.opacity(0.92)
             } else {
-                var font: Font = baseFont
+                var font: Font = effectiveFont
+                if forceItalic { font = font.italic() }
                 if token.isBold { font = font.bold() }
                 if token.isItalic { font = font.italic() }
                 piece.font = font
             }
 
-            if token.isStrikethrough { piece.strikethroughStyle = .single }
+            if strike { piece.strikethroughStyle = .single }
 
             if let destination = token.linkDestination,
                let url = URL(string: destination) {
