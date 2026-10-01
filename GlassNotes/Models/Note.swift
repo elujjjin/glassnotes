@@ -59,7 +59,11 @@ public final class Note {
             return title
         }
         let firstLine = content.components(separatedBy: .newlines).first ?? ""
-        let cleaned = firstLine.replacingOccurrences(of: "#", with: "").trimmingCharacters(in: .whitespaces)
+        // Strip only leading heading markers. Removing every "#" would turn
+        // "C# notes" into "C notes".
+        var cleaned = firstLine.trimmingCharacters(in: .whitespaces)
+        while cleaned.hasPrefix("#") { cleaned = String(cleaned.dropFirst()) }
+        cleaned = cleaned.trimmingCharacters(in: .whitespaces)
         return cleaned.isEmpty ? "Untitled Note" : cleaned
     }
     
@@ -76,15 +80,33 @@ public final class Note {
         content.split(whereSeparator: { $0.isWhitespace }).count
     }
 
-    public var formattedDate: String {
+    /// Cached because a `DateFormatter` is expensive to create and this runs
+    /// once per visible card on every table refresh.
+    private static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter
+    }()
+
+    private static let monthFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+
+    private static let yearFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yy"
+        return formatter
+    }()
+
+    public var formattedDate: String {
         if Calendar.current.isDateInToday(updatedAt) {
-            formatter.dateFormat = "h:mm a"
-        } else if Calendar.current.isDate(updatedAt, equalTo: Date(), toGranularity: .year) {
-            formatter.dateFormat = "MMM d"
-        } else {
-            formatter.dateFormat = "MM/dd/yy"
+            return Self.timeFormatter.string(from: updatedAt)
         }
-        return formatter.string(from: updatedAt)
+        if Calendar.current.isDate(updatedAt, equalTo: Date(), toGranularity: .year) {
+            return Self.monthFormatter.string(from: updatedAt)
+        }
+        return Self.yearFormatter.string(from: updatedAt)
     }
 }

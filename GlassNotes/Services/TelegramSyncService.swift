@@ -47,14 +47,10 @@ public final class TelegramSyncService: ObservableObject {
         isSyncing = true
         defer { isSyncing = false }
 
-        let formatted = """
-        <b>\(Self.escapeHTML(heading.isEmpty ? "Quick note" : heading))</b>
-
-        \(Self.escapeHTML(body))
-        """
-
-        let chunks = Self.split(formatted, limit: Self.messageLimit)
-        let total = chunks.count
+        let messages = Self.composeMessages(
+            heading: heading, body: body, limit: Self.messageLimit
+        )
+        let total = messages.count
         var firstMessageId: Int64?
 
         // Only bother the Dynamic Island for genuinely multi-part sends; a
@@ -66,7 +62,7 @@ public final class TelegramSyncService: ObservableObject {
             )
         }
 
-        for (index, chunk) in chunks.enumerated() {
+        for (index, chunk) in messages.enumerated() {
             switch await Self.post(text: chunk, to: url, chatId: chat) {
             case .success(let messageId):
                 if firstMessageId == nil { firstMessageId = messageId }
@@ -85,8 +81,8 @@ public final class TelegramSyncService: ObservableObject {
                         finalStatus: "Stopped at \(index) of \(total)"
                     )
                 }
-                statusMessage = chunks.count > 1
-                    ? "Sent \(index) of \(chunks.count) parts, then failed: \(message)"
+                statusMessage = total > 1
+                    ? "Sent \(index) of \(total) parts, then failed: \(message)"
                     : "Telegram sync failed: \(message)"
                 return firstMessageId
             }
@@ -98,8 +94,8 @@ public final class TelegramSyncService: ObservableObject {
             )
         }
 
-        statusMessage = chunks.count > 1
-            ? "Sent note to Telegram in \(chunks.count) parts."
+        statusMessage = total > 1
+            ? "Sent note to Telegram in \(total) parts."
             : "Successfully sent note to Telegram."
         return firstMessageId
     }
@@ -166,6 +162,35 @@ public final class TelegramSyncService: ObservableObject {
 
     // MARK: - Formatting helpers
 
+    /// Builds the HTML messages for one note.
+    ///
+    /// The heading is bolded in the first message only when the whole wrapper
+    /// fits with room to spare, and the body is split *after* escaping, so a
+    /// chunk boundary can never land inside an entity like `&amp;`. Telegram
+    /// rejects a message containing a half-written entity, which would stop a
+    /// multi-part send partway through.
+    static func composeMessages(heading: String, body: String, limit: Int) -> [String] {
+        let title = heading.isEmpty ? "Quick note" : heading
+        let escapedTitle = escapeHTML(title)
+        // "<b>" plus "</b>\n\n" around the escaped heading.
+        let wrapperLength = 3 + escapedTitle.count + 6
+        let budget = limit - wrapperLength
+
+        // The budget must leave room for several whole entities (5 chars each);
+        // a sliver of a budget would defeat the entity-safe split below.
+        guard budget > 32 else {
+            // A heading too large to bold inside one message: send plain text
+            // rather than a message whose wrapper cannot fit.
+            return split(escapedTitle + "\n\n" + escapeHTML(body), limit: limit)
+        }
+
+        let pieces = split(escapeHTML(body), limit: budget)
+        guard let first = pieces.first else {
+            return ["<b>\(escapedTitle)</b>"]
+        }
+        return ["<b>\(escapedTitle)</b>\n\n" + first] + pieces.dropFirst()
+    }
+
     /// Escapes the three characters Telegram's HTML parser treats as markup.
     /// The ampersand must be replaced first or it double-escapes its own output.
     static func escapeHTML(_ text: String) -> String {
@@ -202,6 +227,13 @@ public final class TelegramSyncService: ObservableObject {
                 }
             }
 
+            // Never cut through an HTML entity or tag: the message would then
+            // contain a half-written one and Telegram would reject it.
+            cutEnd = safeCut(units, from: index, to: cutEnd)
+            // `safeCut` can return `index` if the window opens mid-construct;
+            // fall back to the plain cut so the loop still makes progress.
+            if cutEnd <= index { cutEnd = windowEnd }
+
             chunks.append(String(units[index..<cutEnd]))
             index = cutEnd
         }
@@ -209,5 +241,24 @@ public final class TelegramSyncService: ObservableObject {
         let tail = String(units[index...])
         if !tail.isEmpty { chunks.append(tail) }
         return chunks.isEmpty ? [text] : chunks
+    }
+
+    /// Moves `cut` back so it does not land inside an HTML entity (`&amp;`) or
+    /// a tag (`<b>`). Only the last few characters can need adjusting: the
+    /// constructs produced here are at most five characters long, and only the
+    /// one nearest the cut can straddle it.
+    private static func safeCut(_ units: [Character], from start: Int, to cut: Int) -> Int {
+        let floorIndex = max(start, cut - 16)
+        var i = cut - 1
+        while i >= floorIndex {
+            let char = units[i]
+            if char == "&" || char == "<" {
+                let terminator: Character = char == "&" ? ";" : ">"
+                let closesBeforeCut = (i + 1..<cut).contains { units[$0] == terminator }
+                if !closesBeforeCut { return i }
+            }
+            i -= 1
+        }
+        return cut
     }
 }

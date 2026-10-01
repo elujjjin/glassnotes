@@ -40,7 +40,6 @@ struct QuickStreamView: View {
     @State private var isShowingSettings = false
     @State private var isShowingArchive = false
     @State private var isShowingFolders = false
-    @State private var showSortMenu = false
 
     private var config: SyncConfig? { configs.first }
     private var hapticsEnabled: Bool { config?.hapticsEnabled ?? true }
@@ -315,12 +314,14 @@ struct QuickStreamView: View {
                             Button {
                                 note.isArchived = true
                                 try? context.save()
+                                WidgetDataWriter.shared.sync(context: context)
                             } label: {
                                 Label("Archive", systemImage: "archivebox")
                             }
                             Button(role: .destructive) {
                                 context.delete(note)
                                 try? context.save()
+                                WidgetDataWriter.shared.sync(context: context)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }

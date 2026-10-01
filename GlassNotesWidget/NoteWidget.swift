@@ -41,11 +41,17 @@ struct NoteWidgetProvider: TimelineProvider {
 
     private func readNotesFromSharedStore() -> [WidgetNote] {
         // App Group container URL
+        let decoder = JSONDecoder()
+        // The writer uses `.iso8601`; the default strategy expects a numeric
+        // timestamp, so without this every decode fails and the widget falls
+        // back to the placeholder forever.
+        decoder.dateDecodingStrategy = .iso8601
         guard let storeURL = FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: "group.com.glassnotes.app")?
             .appendingPathComponent("widget_notes.json"),
               let data = try? Data(contentsOf: storeURL),
-              let decoded = try? JSONDecoder().decode([WidgetNote].self, from: data)
+              let decoded = try? decoder.decode([WidgetNote].self, from: data),
+              !decoded.isEmpty
         else {
             // Return placeholder notes if widget data hasn't been written yet
             return [WidgetNote(title: "GlassNotes", snippet: "Open the app to see your notes.", updatedAt: Date())]

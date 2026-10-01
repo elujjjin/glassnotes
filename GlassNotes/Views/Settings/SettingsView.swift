@@ -232,7 +232,7 @@ struct SettingsView: View {
                             .buttonStyle(.plain)
                             .contextMenu {
                                 Button("Delete", role: .destructive) {
-                                    appearance.togglePreset(named: preset.name, hex: preset.hex)
+                                    appearance.removePreset(hex: preset.hex)
                                 }
                             }
                         }
@@ -246,7 +246,7 @@ struct SettingsView: View {
     private func saveCustomPreset() {
         let name = newPresetName.trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
-        appearance.togglePreset(named: name, hex: customAccent.hexString())
+        appearance.savePreset(named: name, hex: customAccent.hexString())
         newPresetName = ""
     }
 
@@ -434,6 +434,9 @@ struct SettingsView: View {
             titleVisibility: .visible, presenting: folderPendingDeletion
         ) { folder in
             Button("Delete \"\(folder.name)\"", role: .destructive) {
+                // `folderID` is a raw UUID, not a relationship, so deleting the
+                // folder leaves it dangling unless the notes are cleared here.
+                for note in notes where note.folderID == folder.id { note.folderID = nil }
                 context.delete(folder); try? context.save(); folderPendingDeletion = nil
             }
             Button("Cancel", role: .cancel) { folderPendingDeletion = nil }

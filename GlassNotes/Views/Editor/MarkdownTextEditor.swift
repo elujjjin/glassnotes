@@ -10,6 +10,9 @@ import UIKit
 struct MarkdownTextEditor: UIViewRepresentable {
     @Binding var text: String
     @Binding var selection: NSRange
+    /// Matches `SyncConfig.editorFontSize`. Without it the UITextView stayed at
+    /// its hardcoded 16 pt and the Settings slider only affected the preview.
+    var fontSize: CGFloat = 16
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -19,7 +22,7 @@ struct MarkdownTextEditor: UIViewRepresentable {
         let view = UITextView()
         view.delegate = context.coordinator
         view.backgroundColor = .clear
-        view.font = .systemFont(ofSize: 16)
+        view.font = .systemFont(ofSize: fontSize)
         view.textColor = .white
         view.tintColor = .white
         view.keyboardDismissMode = .interactive
@@ -60,6 +63,9 @@ struct MarkdownTextEditor: UIViewRepresentable {
         uiView.textColor = .white
         uiView.tintColor = .white
         uiView.backgroundColor = .clear
+        if uiView.font?.pointSize != fontSize {
+            uiView.font = .systemFont(ofSize: fontSize)
+        }
 
         let length = text.utf16.count
 

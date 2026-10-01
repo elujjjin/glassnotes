@@ -1,8 +1,12 @@
 import SwiftUI
+import SwiftData
 
 struct LockView: View {
     @ObservedObject var authService: BiometricAuthService
+    @Query private var configs: [SyncConfig]
     var onUnlock: () -> Void
+
+    private var hapticsEnabled: Bool { configs.first?.hapticsEnabled ?? true }
 
     private var icon: String {
         switch authService.biometryType {
@@ -44,7 +48,7 @@ struct LockView: View {
 
                 Spacer()
 
-                GlassButton(title: "Unlock", icon: icon) {
+                GlassButton(title: "Unlock", icon: icon, hapticsEnabled: hapticsEnabled) {
                     Task {
                         if await authService.authenticate() {
                             onUnlock()

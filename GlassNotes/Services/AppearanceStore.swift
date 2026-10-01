@@ -86,23 +86,18 @@ final class AppearanceStore: ObservableObject {
         self.accentPresets = Self.loadPresets(from: defaults)
     }
 
-    /// Adds a preset, or removes it if that colour is already saved.
+    /// Saves a preset: adds it, or refreshes the name if that colour is already
+    /// stored. Saving the same name twice keeps the preset — the "+" button must
+    /// never delete something the user just asked to save.
     ///
-    /// Tapping an existing swatch to toggle it off is the behaviour people
-    /// expect from a preset list, and avoids a separate delete affordance.
     /// A colour already in the list has its name refreshed rather than
     /// producing a duplicate swatch.
-    func togglePreset(named name: String, hex: String) {
+    func savePreset(named name: String, hex: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalised = hex.uppercased()
         let label = trimmed.isEmpty ? normalised : trimmed
 
         if let index = accentPresets.firstIndex(where: { $0.hex.uppercased() == normalised }) {
-            // Already saved, so this tap saves the colour and clears the name.
-            guard !label.isEmpty, accentPresets[index].name != label else {
-                accentPresets.remove(at: index)
-                return
-            }
             accentPresets[index] = AccentPreset(name: label, hex: normalised)
             return
         }
@@ -112,6 +107,12 @@ final class AppearanceStore: ObservableObject {
         if accentPresets.count > Self.maxPresets {
             accentPresets.removeFirst(accentPresets.count - Self.maxPresets)
         }
+    }
+
+    /// Removes the preset stored under `hex`, if any.
+    func removePreset(hex: String) {
+        let normalised = hex.uppercased()
+        accentPresets.removeAll { $0.hex.uppercased() == normalised }
     }
 
     private static let maxPresets = 24

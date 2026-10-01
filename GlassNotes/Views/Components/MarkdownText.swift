@@ -327,8 +327,9 @@ enum MarkdownBlockParser {
         var remainder = line.dropFirst(2)
         var checked: Bool?
 
-        // `- [ ]` / `- [x]` task markers.
-        if remainder.hasPrefix("["), remainder.count >= 4 {
+        // `- [ ]` / `- [x]` task markers. The minimum is three characters:
+        // "[ ]" with no text after it is still a valid (empty) task.
+        if remainder.hasPrefix("["), remainder.count >= 3 {
             let flag = remainder.dropFirst().first
             if (flag == " " || flag == "x" || flag == "X"),
                remainder.dropFirst(2).first == "]" {

@@ -4,18 +4,28 @@ struct GlassButton: View {
     let title: String
     var icon: String?
     var tint: Color = .white
+    /// Should mirror `SyncConfig.hapticsEnabled`; the default keeps the button
+    /// usable where no config is in scope.
+    var hapticsEnabled: Bool = true
     let action: () -> Void
 
-    init(title: String, icon: String? = nil, tint: Color = .white, action: @escaping () -> Void) {
+    init(
+        title: String,
+        icon: String? = nil,
+        tint: Color = .white,
+        hapticsEnabled: Bool = true,
+        action: @escaping () -> Void
+    ) {
         self.title = title
         self.icon = icon
         self.tint = tint
+        self.hapticsEnabled = hapticsEnabled
         self.action = action
     }
 
     var body: some View {
         Button {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            HapticsService.shared.impact(.medium, enabled: hapticsEnabled)
             action()
         } label: {
             HStack(spacing: 8) {

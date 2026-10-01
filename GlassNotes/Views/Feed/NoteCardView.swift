@@ -13,7 +13,7 @@ struct NoteCardView: View {
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(.yellow)
                     }
-                    Text(note.displayTitle)
+                    Text(cardTitle)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
@@ -74,5 +74,14 @@ struct NoteCardView: View {
             .liquidGlass(GlassConfig(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+    }
+
+    /// A locked note must not leak its body. `displayTitle` falls back to the
+    /// first line of the content, which is exactly what a locked note without a
+    /// title would show on its card.
+    private var cardTitle: String {
+        let trimmedTitle = note.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if note.isLocked, trimmedTitle.isEmpty { return "Locked note" }
+        return note.displayTitle
     }
 }

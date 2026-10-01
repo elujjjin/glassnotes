@@ -26,9 +26,22 @@ struct NoteEditorView: View {
     @State private var draftSaved = false
 
     private let note: Note?
+    /// The note as it was when the editor opened, so `save()` can tell whether
+    /// the user actually changed anything (auto-save usually writes the new
+    /// values first, which would make a naive comparison always say "unchanged").
+    private let original: NoteSnapshot?
     private var config: SyncConfig? { configs.first }
     private var hapticsEnabled: Bool { config?.hapticsEnabled ?? true }
     private var fontSize: CGFloat { CGFloat(config?.editorFontSize ?? 16) }
+
+    private struct NoteSnapshot {
+        var title: String
+        var content: String
+        var isPinned: Bool
+        var isLocked: Bool
+        var tagIDs: Set<UUID>
+        var folderID: UUID?
+    }
 
     init(note: Note?) {
         self.note = note
@@ -38,6 +51,16 @@ struct NoteEditorView: View {
         _isLocked = State(initialValue: note?.isLocked ?? false)
         _selectedTags = State(initialValue: Set((note?.tags ?? []).map(\.id)))
         _selectedFolderID = State(initialValue: note?.folderID)
+        original = note.map {
+            NoteSnapshot(
+                title: $0.title,
+                content: $0.content,
+                isPinned: $0.isPinned,
+                isLocked: $0.isLocked,
+                tagIDs: Set($0.tags.map(\.id)),
+                folderID: $0.folderID
+            )
+        }
     }
 
     var body: some View {
@@ -251,7 +274,7 @@ struct NoteEditorView: View {
             .padding(.horizontal, 20)
         } else {
             VStack(spacing: 10) {
-                MarkdownTextEditor(text: $content, selection: $editorSelection)
+                MarkdownTextEditor(text: $content, selection: $editorSelection, fontSize: fontSize)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(12)
                     .liquidGlass(GlassConfig.field)
@@ -288,9 +311,14 @@ struct NoteEditorView: View {
         content.split(whereSeparator: { $0.isWhitespace }).count
     }
 
+    /// A filesystem-safe stem for the exported file. A title containing "/"
+    /// would otherwise build a nested path that never gets written, leaving the
+    /// share sheet with a stale or missing file.
     private var exportFilename: String {
         let base = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        return base.isEmpty ? "Note" : base
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: "\n", with: " ")
+        return base.isEmpty ? "Note" : String(base.prefix(80))
     }
 
     private var markdownExportFile: URL {
@@ -322,7 +350,9 @@ struct NoteEditorView: View {
 
     private func performAutoSave() {
         let hasContent = !title.isEmpty || !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        guard hasContent else { return }
+        // Refuse to create an empty note, but keep persisting an existing note
+        // whose text the user has cleared — otherwise that edit is dropped.
+        guard hasContent || note != nil || persistedNote != nil else { return }
         let resolvedTags = tags.filter { selectedTags.contains($0.id) }
         if let note {
             note.title = title
@@ -343,6 +373,8 @@ struct NoteEditorView: View {
         } else if let draft = persistedNote {
             draft.title = title
             draft.content = content
+            draft.isPinned = isPinned
+            draft.isLocked = isLocked
             draft.tags = resolvedTags
             draft.folderID = selectedFolderID
             draft.isDraft = true
@@ -360,17 +392,29 @@ struct NoteEditorView: View {
     // MARK: - Save
 
     private func save() {
-        if title.isEmpty && content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let hasContent = !title.isEmpty || !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        // Only refuse to save when there is nothing to store *and* no existing
+        // note to update. Clearing an existing note must not be silently
+        // discarded on the way out.
+        if !hasContent && note == nil && persistedNote == nil {
             dismiss(); return
         }
         autoSaveTask?.cancel()
         let resolvedTags = tags.filter { selectedTags.contains($0.id) }
 
         if let note {
-            let changed = note.title != title || note.content != content
-                || note.isPinned != isPinned || note.isLocked != isLocked
-                || Set(note.tags.map(\.id)) != selectedTags
-                || note.folderID != selectedFolderID
+            // Compare with the snapshot from init, not with `note` itself:
+            // auto-save has usually already copied the edited values across, so
+            // comparing with the live object reports "unchanged" and skips the
+            // `updatedAt` bump that "Updated" sorting depends on.
+            let changed = original.map {
+                $0.title != title
+                    || $0.content != content
+                    || $0.isPinned != isPinned
+                    || $0.isLocked != isLocked
+                    || $0.tagIDs != selectedTags
+                    || $0.folderID != selectedFolderID
+            } ?? true
             note.title = title
             note.content = content
             note.isPinned = isPinned

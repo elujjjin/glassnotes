@@ -22,7 +22,7 @@ struct ArchiveView: View {
                         Text("Archive is empty")
                             .font(.system(size: 17, weight: .medium))
                             .foregroundStyle(.secondary)
-                        Text("Swipe a note left and tap Archive to move it here.")
+                        Text("Long-press a note in the feed and choose Archive to move it here.")
                             .font(.system(size: 13))
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
@@ -33,10 +33,14 @@ struct ArchiveView: View {
                         LazyVStack(spacing: 12) {
                             ForEach(archivedNotes) { note in
                                 NoteCardView(note: note) { editingNote = note }
+                                    // `.swipeActions` is a `List`-only modifier before
+                                    // iOS 27, and this feed is a `ScrollView` — so the
+                                    // long-press menu below is the reliable path.
                                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                         Button {
                                             note.isArchived = false
                                             try? context.save()
+                                            WidgetDataWriter.shared.sync(context: context)
                                         } label: {
                                             Label("Unarchive", systemImage: "arrow.uturn.up")
                                         }
@@ -46,6 +50,23 @@ struct ArchiveView: View {
                                         Button(role: .destructive) {
                                             context.delete(note)
                                             try? context.save()
+                                            WidgetDataWriter.shared.sync(context: context)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                    .contextMenu {
+                                        Button {
+                                            note.isArchived = false
+                                            try? context.save()
+                                            WidgetDataWriter.shared.sync(context: context)
+                                        } label: {
+                                            Label("Unarchive", systemImage: "arrow.uturn.up")
+                                        }
+                                        Button(role: .destructive) {
+                                            context.delete(note)
+                                            try? context.save()
+                                            WidgetDataWriter.shared.sync(context: context)
                                         } label: {
                                             Label("Delete", systemImage: "trash")
                                         }
